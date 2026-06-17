@@ -2627,8 +2627,15 @@ window.onload = async function() {
   // 기존 세션 확인
   var res = await _sb.auth.getSession();
   if (res.data && res.data.session) {
-    _applyLoginUI(res.data.session.user);
-    await _bootApp();
+    var member = await _getWtjMember(res.data.session.user.email);
+    if (member && member.is_active) {
+      _currentUser = {email: member.email, name: member.display_name, role: member.role, id: member.id};
+      _applyLoginUI();
+      await _bootApp();
+    } else {
+      await _sb.auth.signOut();
+      document.getElementById('login-screen').style.display = 'flex';
+    }
   } else {
     document.getElementById('login-screen').style.display = 'flex';
   }
