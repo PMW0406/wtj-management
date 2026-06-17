@@ -1520,7 +1520,11 @@ function renderDashboard(d){
 
 // ─── Orders List ────────────────────────────────────────────
 function loadOrdersList(){
-  if(allOrders.length>0){renderOrders(allOrders);return;}
+  if(allOrders.length>0){
+    document.getElementById('ordersLoader').style.display='none';
+    document.getElementById('ordersContent').style.display='block';
+    renderOrders(allOrders);return;
+  }
   document.getElementById('ordersLoader').style.display='block';
   document.getElementById('ordersContent').style.display='none';
   function done(d){
@@ -1564,7 +1568,11 @@ function renderOrders(data){
 
 // ─── Payments List ──────────────────────────────────────────
 function loadPaymentsList(){
-  if(allPayments.length>0){renderPayments(allPayments);return;}
+  if(allPayments.length>0){
+    document.getElementById('paymentsLoader').style.display='none';
+    document.getElementById('paymentsContent').style.display='block';
+    renderPayments(allPayments);return;
+  }
   document.getElementById('paymentsLoader').style.display='block';
   document.getElementById('paymentsContent').style.display='none';
   function done(d){
