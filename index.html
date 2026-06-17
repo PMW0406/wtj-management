@@ -931,6 +931,44 @@ function getFacilitiesLocal() {
   return result.sort();
 }
 
+// ── GitHub data.json 직접 push ────────────────────────────────
+var GH_TOKEN_KEY = 'wtj_gh_token';
+function getGHToken() {
+  var t = localStorage.getItem(GH_TOKEN_KEY);
+  if (!t) { t = prompt('GitHub Personal Access Token을 입력하세요 (repo 권한 필요):'); if(t) localStorage.setItem(GH_TOKEN_KEY, t.trim()); }
+  return t ? t.trim() : null;
+}
+function pushDataJson(data) {
+  var token = localStorage.getItem(GH_TOKEN_KEY);
+  if (!token) return;
+  var url = 'https://api.github.com/repos/PMW0406/wtj-management/contents/data.json';
+  fetch(url, {headers:{'Authorization':'token '+token,'User-Agent':'WTJ-App'}})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(cur){
+      var body = {
+        message: 'data: export ' + new Date().toISOString().substring(0,16),
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(data)))),
+        branch: 'main'
+      };
+      if (cur && cur.sha) body.sha = cur.sha;
+      return fetch(url, {method:'PUT', headers:{'Authorization':'token '+token,'Content-Type':'application/json','User-Agent':'WTJ-App'}, body:JSON.stringify(body)});
+    })
+    .then(function(r){ if(r&&r.ok) console.log('data.json push 완료'); })
+    .catch(function(e){ console.warn('pushDataJson 실패:', e); });
+}
+
+function gasGetWithPush(action, data, cb) {
+  gasGet(action, data, function(res) {
+    if (res && res.success && res.data) {
+      _data = res.data;
+      allOrders = _data.orders || [];
+      allPayments = _data.payments || [];
+      pushDataJson(_data);
+    }
+    if (cb) cb(res);
+  });
+}
+
 // ── 데이터 상태 표시 ──────────────────────────────────────────
 function showDataTimestamp() {
   if (!_data || !_data.exportedAt) return;
@@ -1944,13 +1982,13 @@ function submitUpload(){
         if(r&&r.success){pIdx+=CHUNK;nextStep();}else fail(r&&r.error);
       }); return;
     }
-    gasGet('exportNow',{},function(){
+    gasGetWithPush('exportNow',{},function(res){
       btn.disabled=false; btn.textContent=(jp2?'Googleシートに保存':'구글 시트에 저장');
       document.getElementById('euSuccess').textContent=jp2
         ?'✅ 完了！受注:'+orders.length+'件 / 入金:'+pays.length+'件'
         :'✅ 완료! 수주:'+orders.length+'건 / 입금:'+pays.length+'건';
       document.getElementById('euSuccess').style.display='block';
-      refreshData(null); _ctData=null; _baData=null;
+      _ctData=null; _baData=null;
     });
   }
   function fail(e){
@@ -2050,10 +2088,10 @@ function submitOrder(){
   var cat=opt.getAttribute('data-cat')||'기기';
   if(!d||!f||!p||!u||!q){alert(lang==='kr'?'모든 필수 항목을 입력해주세요.':'必須項目を入力してください。');return;}
   btn.disabled=true;btn.textContent=(lang==='jp'?'登録中...':'등록 중...');
-  gasGet('addOrder',{date:d,facility:f,product:p,unitPrice:u,qty:q,category:cat},function(res){
+  gasGetWithPush('addOrder',{date:d,facility:f,product:p,unitPrice:u,qty:q,category:cat},function(res){
     btn.disabled=false;btn.textContent=T[lang].btnSubmitOrder;
     var ok=document.getElementById('orderSuccess'),err=document.getElementById('orderError');
-    if(res&&res.success){ok.textContent=T[lang].msgOrderSuccess;ok.style.display='block';err.style.display='none';resetOrderForm();refreshData(function(){allOrders=_data.orders||[];});setTimeout(function(){ok.style.display='none';},3000);}
+    if(res&&res.success){ok.textContent=T[lang].msgOrderSuccess;ok.style.display='block';err.style.display='none';resetOrderForm();setTimeout(function(){ok.style.display='none';},3000);}
     else{err.style.display='block';err.textContent='❌ '+(res&&res.error||'오류');}
   });
 }
@@ -2074,10 +2112,10 @@ function submitPayment(){
   var amt=document.getElementById('inPayAmount').value;
   if(!d||!desc||!amt){alert(lang==='kr'?'모든 필수 항목을 입력해주세요.':'必須項目を入力してください。');return;}
   btn.disabled=true;btn.textContent=(lang==='jp'?'登録中...':'등록 중...');
-  gasGet('addPayment',{date:d,description:desc,amount:amt,orderRef:document.getElementById('inPayOrderRef').value},function(res){
+  gasGetWithPush('addPayment',{date:d,description:desc,amount:amt,orderRef:document.getElementById('inPayOrderRef').value},function(res){
     btn.disabled=false;btn.textContent=T[lang].btnSubmitPay;
     var ok=document.getElementById('paySuccess'),err=document.getElementById('payError');
-    if(res&&res.success){ok.textContent=T[lang].msgPaySuccess;ok.style.display='block';err.style.display='none';resetPayForm();refreshData(function(){allPayments=_data.payments||[];});setTimeout(function(){ok.style.display='none';},3000);}
+    if(res&&res.success){ok.textContent=T[lang].msgPaySuccess;ok.style.display='block';err.style.display='none';resetPayForm();setTimeout(function(){ok.style.display='none';},3000);}
     else{err.style.display='block';err.textContent='❌ '+(res&&res.error||'오류');}
   });
 }
@@ -2250,9 +2288,9 @@ function saveEditOrder(){
     document.getElementById('eoError').style.display='block';
     btn.disabled=false; btn.textContent=(lang==='jp'?'保存':'저장'); return;
   }
-  gasGet('updateOrder',d,function(res){
+  gasGetWithPush('updateOrder',d,function(res){
     btn.disabled=false; btn.textContent=(lang==='jp'?'保存':'저장');
-    if(res&&res.success){closeEditOrder();refreshData(function(){loadOrdersList();});}
+    if(res&&res.success){closeEditOrder();loadOrdersList();}
     else{document.getElementById('eoError').textContent='❌ '+(res&&res.error||'오류');document.getElementById('eoError').style.display='block';}
   });
 }
@@ -2260,8 +2298,8 @@ function confirmDeleteOrder(idx){
   var o=allOrders[idx];
   if(!o) return;
   if(!confirm((o.date+' / '+o.facility+' / '+o.product+'\n\n'+(lang==='jp'?'この受注を削除しますか？':'이 수주 건을 삭제할까요?')))) return;
-  gasGet('deleteOrder',{row:o._row},function(res){
-    if(res&&res.success){refreshData(function(){loadOrdersList();});}
+  gasGetWithPush('deleteOrder',{row:o._row},function(res){
+    if(res&&res.success){loadOrdersList();}
     else alert('❌ '+(res&&res.error||'오류'));
   });
 }
@@ -2293,9 +2331,9 @@ function saveEditPayment(){
     document.getElementById('epError').style.display='block';
     btn.disabled=false; btn.textContent=(lang==='jp'?'保存':'저장'); return;
   }
-  gasGet('updatePayment',d,function(res){
+  gasGetWithPush('updatePayment',d,function(res){
     btn.disabled=false; btn.textContent=(lang==='jp'?'保存':'저장');
-    if(res&&res.success){closeEditPayment();refreshData(function(){loadPaymentsList();});}
+    if(res&&res.success){closeEditPayment();loadPaymentsList();}
     else{document.getElementById('epError').textContent='❌ '+(res&&res.error||'오류');document.getElementById('epError').style.display='block';}
   });
 }
@@ -2303,8 +2341,8 @@ function confirmDeletePayment(idx){
   var p=allPayments[idx];
   if(!p) return;
   if(!confirm((p.date+' / '+p.description+' / ¥'+fmt(p.amount)+'\n\n'+(lang==='jp'?'この入金を削除しますか？':'이 입금 건을 삭제할까요?')))) return;
-  gasGet('deletePayment',{row:p._row},function(res){
-    if(res&&res.success){refreshData(function(){loadPaymentsList();});}
+  gasGetWithPush('deletePayment',{row:p._row},function(res){
+    if(res&&res.success){loadPaymentsList();}
     else alert('❌ '+(res&&res.error||'오류'));
   });
 }
