@@ -991,7 +991,7 @@ async function _getWtjMember(email, userId) {
   // wtj_members에 없으면 crm_profiles에서 jp 권한 확인 (id로 조회)
   if (userId) {
     var r2 = await _sb.from('crm_profiles').select('*').eq('id', userId).maybeSingle();
-    if (r2.data && r2.data.access && r2.data.access.includes('jp')) {
+    if (r2.data && (r2.data.role === 'admin' || (r2.data.access && r2.data.access.includes('jp')))) {
       return {
         email: email,
         display_name: r2.data.display_name || email.split('@')[0],
@@ -2628,7 +2628,6 @@ window.onload = async function() {
       _applyLoginUI();
       await _bootApp();
     } else {
-      await _sb.auth.signOut();
       document.getElementById('login-screen').style.display = 'flex';
     }
   } else {
