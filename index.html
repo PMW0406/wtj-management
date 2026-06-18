@@ -970,7 +970,7 @@ async function doLogin() {
   }
 
   // wtj_members 테이블에서 접근 권한 확인
-  var member = await _getWtjMember(res.data.user.email);
+  var member = await _getWtjMember(res.data.user.email, res.data.user.id);
   if (!member || !member.is_active) {
     await _sb.auth.signOut();
     errEl.textContent = member ? '❌ 계정이 비활성화 상태입니다' : '❌ 이 시스템에 대한 접근 권한이 없습니다';
@@ -985,19 +985,21 @@ async function doLogin() {
   await _bootApp();
 }
 
-async function _getWtjMember(email) {
+async function _getWtjMember(email, userId) {
   var r = await _sb.from('wtj_members').select('*').eq('email', email.toLowerCase()).maybeSingle();
   if (r.data) return r.data;
-  // wtj_members에 없으면 crm_profiles에서 jp 권한 확인
-  var r2 = await _sb.from('crm_profiles').select('*').eq('email', email.toLowerCase()).maybeSingle();
-  if (r2.data && r2.data.access && (r2.data.access.includes('jp') || r2.data.access === '둘다')) {
-    return {
-      email: r2.data.email,
-      display_name: r2.data.display_name || email.split('@')[0],
-      role: r2.data.role === 'admin' ? 'admin' : 'general',
-      is_active: true,
-      id: r2.data.id
-    };
+  // wtj_members에 없으면 crm_profiles에서 jp 권한 확인 (id로 조회)
+  if (userId) {
+    var r2 = await _sb.from('crm_profiles').select('*').eq('id', userId).maybeSingle();
+    if (r2.data && r2.data.access && r2.data.access.includes('jp')) {
+      return {
+        email: email,
+        display_name: r2.data.display_name || email.split('@')[0],
+        role: r2.data.role === 'admin' ? 'admin' : 'general',
+        is_active: true,
+        id: r2.data.id
+      };
+    }
   }
   return null;
 }
@@ -2620,7 +2622,7 @@ window.onload = async function() {
   // 기존 세션 확인
   var res = await _sb.auth.getSession();
   if (res.data && res.data.session) {
-    var member = await _getWtjMember(res.data.session.user.email);
+    var member = await _getWtjMember(res.data.session.user.email, res.data.session.user.id);
     if (member && member.is_active) {
       _currentUser = {email: member.email, name: member.display_name, role: member.role, id: member.id};
       _applyLoginUI();
