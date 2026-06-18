@@ -421,6 +421,22 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
       <div class="loader" id="ctLoader"><div class="spinner"></div><br><br>데이터 불러오는 중...</div>
       <div id="ctContent" style="display:none">
 
+        <!-- 기간 필터 -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;padding:10px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0">
+          <span style="font-size:12px;font-weight:600;color:#374151;white-space:nowrap">📅 조회 기간</span>
+          <select id="ct-year-sel" class="filter-input" style="width:84px" onchange="loadConsumableTrend()">
+            <option value="2026" selected>2026년</option>
+            <option value="2025">2025년</option>
+          </select>
+          <select id="ct-from-sel" class="filter-input" style="width:70px" onchange="_ctPeriodChange()">
+            <option value="01" selected>1월</option><option value="02">2월</option><option value="03">3월</option><option value="04">4월</option><option value="05">5월</option><option value="06">6월</option><option value="07">7월</option><option value="08">8월</option><option value="09">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
+          </select>
+          <span style="font-size:13px;color:#9ca3af">~</span>
+          <select id="ct-to-sel" class="filter-input" style="width:70px" onchange="_ctPeriodChange()">
+            <option value="01">1월</option><option value="02">2월</option><option value="03">3월</option><option value="04">4월</option><option value="05">5월</option><option value="06">6월</option><option value="07">7월</option><option value="08">8월</option><option value="09">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
+          </select>
+        </div>
+
         <!-- KPI 카드 -->
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px">
           <div style="background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06)">
@@ -525,12 +541,14 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
                 <option value="2025">2025년</option>
                 <option value="2026">2026년</option>
               </select>
-              <select class="filter-input" id="orderMonthFilter" onchange="filterOrders()">
-                <option value="">전체월</option>
-                <option value="01">1월</option><option value="02">2월</option><option value="03">3월</option>
-                <option value="04">4월</option><option value="05">5월</option><option value="06">6월</option>
-                <option value="07">7월</option><option value="08">8월</option><option value="09">9월</option>
-                <option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
+              <select class="filter-input" id="orderFromMonth" onchange="filterOrders()" style="width:70px">
+                <option value="">전체</option>
+                <option value="01">1월</option><option value="02">2월</option><option value="03">3월</option><option value="04">4월</option><option value="05">5월</option><option value="06">6월</option><option value="07">7월</option><option value="08">8월</option><option value="09">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
+              </select>
+              <span style="color:#9ca3af;font-size:13px">~</span>
+              <select class="filter-input" id="orderToMonth" onchange="filterOrders()" style="width:70px">
+                <option value="">전체</option>
+                <option value="01">1월</option><option value="02">2월</option><option value="03">3월</option><option value="04">4월</option><option value="05">5월</option><option value="06">6월</option><option value="07">7월</option><option value="08">8월</option><option value="09">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
               </select>
               <input class="filter-input" type="text" id="orderSearchFilter" onkeyup="filterOrders()" placeholder="병원명 / 제품 검색...">
               <select class="filter-input" id="orderCatFilter" onchange="filterOrders()">
@@ -577,12 +595,14 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
                 <option value="2025">2025년</option>
                 <option value="2026">2026년</option>
               </select>
-              <select class="filter-input" id="payMonthFilter" onchange="filterPayments()">
-                <option value="">전체월</option>
-                <option value="01">1월</option><option value="02">2월</option><option value="03">3월</option>
-                <option value="04">4월</option><option value="05">5월</option><option value="06">6월</option>
-                <option value="07">7월</option><option value="08">8월</option><option value="09">9월</option>
-                <option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
+              <select class="filter-input" id="payFromMonth" onchange="filterPayments()" style="width:70px">
+                <option value="">전체</option>
+                <option value="01">1월</option><option value="02">2월</option><option value="03">3월</option><option value="04">4월</option><option value="05">5월</option><option value="06">6월</option><option value="07">7월</option><option value="08">8월</option><option value="09">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
+              </select>
+              <span style="color:#9ca3af;font-size:13px">~</span>
+              <select class="filter-input" id="payToMonth" onchange="filterPayments()" style="width:70px">
+                <option value="">전체</option>
+                <option value="01">1월</option><option value="02">2월</option><option value="03">3월</option><option value="04">4월</option><option value="05">5월</option><option value="06">6월</option><option value="07">7월</option><option value="08">8월</option><option value="09">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
               </select>
               <input class="filter-input" type="text" id="paySearchFilter" onkeyup="filterPayments()" placeholder="거래처/내용 검색...">
             </div>
@@ -1529,7 +1549,7 @@ function setLang(l){
       else if(o.value) o.text=o.value+ySuffix;
     });
   });
-  ['orderMonthFilter','payMonthFilter'].forEach(function(id){
+  ['orderFromMonth','orderToMonth','payFromMonth','payToMonth','ct-from-sel','ct-to-sel'].forEach(function(id){
     var sel=document.getElementById(id); if(!sel) return;
     Array.prototype.forEach.call(sel.options,function(o){
       if(o.value==='') o.text=mAll;
@@ -1804,14 +1824,16 @@ function loadOrdersList(){
 }
 function filterOrders(){
   var year=document.getElementById('orderYearFilter').value;
-  var month=document.getElementById('orderMonthFilter').value;
+  var fromM=document.getElementById('orderFromMonth').value;
+  var toM=document.getElementById('orderToMonth').value;
   var search=document.getElementById('orderSearchFilter').value.toLowerCase();
   var cat=document.getElementById('orderCatFilter').value;
   renderOrders(allOrders.filter(function(o){
     if(!o.date||o.date<'2025') return false;
     var ym=o.date.substring(0,7);
+    var mm=ym.substring(5);
     return(!year||(ym.startsWith(year)))&&
-           (!month||(ym.substring(5)===month))&&
+           (!fromM||(mm>=fromM))&&(!toM||(mm<=toM))&&
            (!search||(o.facility&&o.facility.toLowerCase().indexOf(search)!==-1)||(o.product&&o.product.toLowerCase().indexOf(search)!==-1))&&
            (!cat||o.category===cat);
   }));
@@ -1852,13 +1874,15 @@ function loadPaymentsList(){
 }
 function filterPayments(){
   var year=document.getElementById('payYearFilter').value;
-  var month=document.getElementById('payMonthFilter').value;
+  var fromM=document.getElementById('payFromMonth').value;
+  var toM=document.getElementById('payToMonth').value;
   var search=document.getElementById('paySearchFilter').value.toLowerCase();
   renderPayments(allPayments.filter(function(p){
     if(!p.date||p.date<'2025') return false;
     var ym=p.date.substring(0,7);
+    var mm=ym.substring(5);
     return(!year||(ym.startsWith(year)))&&
-           (!month||(ym.substring(5)===month))&&
+           (!fromM||(mm>=fromM))&&(!toM||(mm<=toM))&&
            (!search||(p.description&&p.description.toLowerCase().indexOf(search)!==-1));
   }));
 }
@@ -2452,8 +2476,21 @@ function openCtDetail(prod){
   var m=document.getElementById('ctDetailModal');
   m.style.display='flex';
 }
+function _ctPeriodChange() {
+  var fromSel = document.getElementById('ct-from-sel');
+  var toSel = document.getElementById('ct-to-sel');
+  if (toSel.value < fromSel.value) toSel.value = fromSel.value;
+  loadConsumableTrend();
+}
+
 function renderConsumableTrend(d){
   if(!d||!d.productRank) return;
+  // 기간 필터 적용
+  var _ctYear = document.getElementById('ct-year-sel')?.value || '2026';
+  var _ctFromM = document.getElementById('ct-from-sel')?.value || '01';
+  var _ctToM = document.getElementById('ct-to-sel')?.value || '12';
+  // 선택 기간의 마지막 월로 KPI '이달' 업데이트
+  var _ctCurM = parseInt(_ctToM);
   _ctDetails=d.productDetails||{};
   document.getElementById('ctKpiAnnual').textContent='¥'+fmtY(d.totalAnnual||0);
   document.getElementById('ctKpiMonth').textContent='¥'+fmtY(d.totalThisMonth||0);
@@ -2464,7 +2501,7 @@ function renderConsumableTrend(d){
 
   // ── 포커스 제품 상세 분석 ──
   var focus=d.focusData||{};
-  var now=new Date(), curM=now.getMonth()+1;
+  var now=new Date(), curM=_ctCurM||now.getMonth()+1;
   function statsHtml(fd){
     if(!fd) return '<span style="color:#94a3b8">'+(lang==='jp'?'データなし':'데이터 없음')+'</span>';
     var avg=fd.monthly?fd.monthly.filter(function(v){return v>0;}).reduce(function(s,v,_,a){return s+v/a.length;},0):0;
