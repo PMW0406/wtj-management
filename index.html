@@ -207,12 +207,7 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
       <span class="nav-icon">💳</span><span id="navPayIn">입금 입력</span>
     </div>
     <!-- 관리자 전용 -->
-    <div id="nav-admin-group" style="display:none">
-      <div class="nav-label" style="margin-top:8px">관리자</div>
-      <div class="nav-item" onclick="showPage('user-mgmt')">
-        <span class="nav-icon">👥</span><span>사용자 관리</span>
-      </div>
-    </div>
+
   </div>
   <!-- 사용자 정보 -->
   <div id="sidebar-user" style="display:none;padding:12px 16px;border-top:1px solid #1e293b;margin-top:auto">
@@ -905,39 +900,6 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
         </div>
       </div>
     </div>
-
-    <!-- ═══ 사용자 관리 (관리자 전용) ═══ -->
-    <div class="page" id="page-user-mgmt">
-      <div class="form-card" style="max-width:860px">
-        <div class="form-title">👥 사용자 관리</div>
-        <div class="form-sub">일본법인 관리시스템 접근 권한을 관리합니다 (CRM과 독립 운영)</div>
-
-        <!-- 사용자 추가 -->
-        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin:20px 0">
-          <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:14px">➕ 새 사용자 추가</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:10px;align-items:end">
-            <div>
-              <label style="font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">이메일 *</label>
-              <input id="um-email" type="email" placeholder="email@example.com" class="filter-input" style="width:100%">
-            </div>
-            <div>
-              <label style="font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">이름 *</label>
-              <input id="um-name" type="text" placeholder="홍길동" class="filter-input" style="width:100%">
-            </div>
-            <div>
-              <label style="font-size:11px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">권한</label>
-              <select id="um-role" class="filter-input">
-                <option value="member">일반</option>
-                <option value="admin">관리자</option>
-              </select>
-            </div>
-            <button onclick="addWtjMember()" style="padding:8px 18px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">추가</button>
-          </div>
-          <div id="um-add-msg" style="font-size:12px;margin-top:10px;display:none"></div>
-          <div style="font-size:11px;color:#94a3b8;margin-top:10px">
-            ※ 추가 후 해당 이메일로 Supabase 계정이 없으면 <strong>초기 비밀번호 설정 메일</strong>을 보낼 수 있습니다
-          </div>
-        </div>
 
         <!-- 사용자 목록 -->
         <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:12px">📋 등록된 사용자</div>
