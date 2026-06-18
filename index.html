@@ -1102,7 +1102,7 @@ async function toggleMemberRole(id, current) {
 
 // ── GitHub Pages 모드 설정 ─────────────────────────────────────
 var GAS_URL = 'https://script.google.com/macros/s/AKfycby8yAjNRou6LgTo9ppcP_YFmZMWZELGXZzXbLpegH8GKED10cGtxly-jlZmty40ekHdDA/exec';
-var DATA_URL = 'https://raw.githubusercontent.com/PMW0406/wtj-management/main/data.json';
+var DATA_URL = 'https://raw.githubusercontent.com/wt-management/wtj-management/main/data.json';
 var GAS_API_KEY = 'wtj2026';
 var _data = null; // data.json 캐시
 
@@ -1183,7 +1183,7 @@ function getGHToken() {
 function pushDataJson(data) {
   var token = localStorage.getItem(GH_TOKEN_KEY);
   if (!token) return;
-  var url = 'https://api.github.com/repos/PMW0406/wtj-management/contents/data.json';
+  var url = 'https://api.github.com/repos/wt-management/wtj-management/contents/data.json';
   fetch(url, {headers:{'Authorization':'token '+token,'User-Agent':'WTJ-App'}})
     .then(function(r){ return r.ok ? r.json() : null; })
     .then(function(cur){
