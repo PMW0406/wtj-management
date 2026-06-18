@@ -1021,14 +1021,16 @@ function _applyLoginUI() {
   var name = _currentUser.name || _currentUser.email.split('@')[0];
   document.getElementById('sidebar-user').style.display = 'block';
   document.getElementById('sidebar-avatar').textContent = name.charAt(0).toUpperCase();
-  // crm_profiles에서 직급/부서 로드
-  _sb.from('crm_profiles').select('position,dept').eq('id', _currentUser.id).maybeSingle().then(function(r) {
-    var pos = (r.data && r.data.position) || '';
+  // crm_profiles에서 이름/직급/부서 로드
+  _sb.from('crm_profiles').select('display_name,position,dept').eq('id', _currentUser.id).maybeSingle().then(function(r) {
+    var realName = (r.data && r.data.display_name) || name;
+    var pos  = (r.data && r.data.position) || '';
     var dept = (r.data && r.data.dept) || '';
-    document.getElementById('sidebar-user-name').textContent = pos ? name + ' ' + pos : name;
+    document.getElementById('sidebar-user-name').textContent = pos ? realName + ' ' + pos : realName;
     document.getElementById('sidebar-user-email').textContent = dept || _currentUser.email;
     var deptEl = document.getElementById('sidebar-user-dept');
     if (deptEl) deptEl.textContent = dept ? _currentUser.email : '';
+    document.getElementById('sidebar-avatar').textContent = realName.charAt(0).toUpperCase();
   });
   // 관리자 메뉴 표시
   var ag2=document.getElementById('nav-admin-group'); if(ag2 && _currentUser.role==='admin') ag2.style.display = 'block';
