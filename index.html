@@ -994,7 +994,7 @@ async function doLogout() {
   await _sb.auth.signOut();
   _currentUser = null;
   document.getElementById('sidebar-user').style.display = 'none';
-  document.getElementById('nav-admin-group').style.display = 'none';
+  var ag=document.getElementById('nav-admin-group'); if(ag) ag.style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('login-email').value = '';
   document.getElementById('login-pw').value = '';
@@ -1009,7 +1009,7 @@ function _applyLoginUI() {
   document.getElementById('sidebar-user-email').textContent = _currentUser.email;
   document.getElementById('sidebar-avatar').textContent = name.charAt(0).toUpperCase();
   // 관리자 메뉴 표시
-  if (_currentUser.role === 'admin') document.getElementById('nav-admin-group').style.display = 'block';
+  var ag2=document.getElementById('nav-admin-group'); if(ag2 && _currentUser.role==='admin') ag2.style.display = 'block';
   // GitHub 토큰 자동 설정
   var _tk = ['gh','p_','xikfNazz8k','sajhaHDWw9','5t8zBotpMP0wRwEH'];
   localStorage.setItem('wtj_gh_token', _tk.join(''));
