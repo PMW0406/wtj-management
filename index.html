@@ -536,19 +536,32 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
 
 
   <!-- 사이트 이동 -->
-  <div style="padding:8px 8px 0;border-top:1px solid #1e293b;margin-top:8px">
-    <div style="padding:6px 4px 4px;font-size:10px;font-weight:700;color:#475569;letter-spacing:.8px;text-transform:uppercase">사이트 이동</div>
-    <div onclick="(async()=>{const {data:{session:s}}=await _sb.auth.getSession();let u='https://wt-management.github.io/wontech/';if(s)u+='#at='+encodeURIComponent(s.access_token)+'&rt='+encodeURIComponent(s.refresh_token);location.href=u;})()"
-      style="border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer;transition:background .15s"
-      onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
-      <span style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#0891b2,#0e7490);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">🇰🇷</span>
-      <span style="font-weight:600">한국 영업</span>
-    </div>
-    <div onclick="(async()=>{const {data:{session:s}}=await _sb.auth.getSession();let u='https://wt-management.github.io/intl/';if(s)u+='#at='+encodeURIComponent(s.access_token)+'&rt='+encodeURIComponent(s.refresh_token);location.href=u;})()"
-      style="border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer;transition:background .15s"
-      onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
-      <span style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">🌏</span>
-      <span style="font-weight:600">해외 영업</span>
+  <div style="padding:8px 8px 0;border-top:1px solid #1e293b;margin-top:8px;position:relative">
+    <button onclick="(function(){var d=document.getElementById('wtj-site-dd');d.style.display=d.style.display==='block'?'none':'block'})()"
+      style="width:100%;background:rgba(255,255,255,.05);border:1px solid #334155;border-radius:8px;padding:8px 12px;color:#94a3b8;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:8px;text-align:left">
+      <span style="font-size:14px">⬛</span><span style="flex:1;font-weight:600">사이트 이동</span><span style="font-size:10px;opacity:.6">▲</span>
+    </button>
+    <div id="wtj-site-dd" style="display:none;position:absolute;bottom:calc(100% + 4px);left:8px;right:8px;background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden;box-shadow:0 -8px 24px rgba(0,0,0,.5);z-index:200">
+      <div style="padding:6px">
+        <div onclick="(async()=>{const {data:{session:s}}=await _sb.auth.getSession();let u='https://wt-management.github.io/wontech/';if(s)u+='#at='+encodeURIComponent(s.access_token)+'&rt='+encodeURIComponent(s.refresh_token);location.href=u;})()"
+          style="border-radius:6px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer"
+          onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
+          <span style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#0891b2,#0e7490);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">🇰🇷</span>
+          <span style="font-weight:600">한국 영업</span>
+        </div>
+        <div onclick="(async()=>{const {data:{session:s}}=await _sb.auth.getSession();let u='https://wt-management.github.io/intl/';if(s)u+='#at='+encodeURIComponent(s.access_token)+'&rt='+encodeURIComponent(s.refresh_token);location.href=u;})()"
+          style="border-radius:6px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer"
+          onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
+          <span style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">🌏</span>
+          <span style="font-weight:600">해외 영업</span>
+        </div>
+        <div onclick="(async()=>{const {data:{session:s}}=await _sb.auth.getSession();let u='https://wt-management.github.io/wontech/?admin=1';if(s)u='https://wt-management.github.io/wontech/#at='+encodeURIComponent(s.access_token)+'&rt='+encodeURIComponent(s.refresh_token)+'&goto=admin';location.href=u;})()"
+          style="border-radius:6px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer"
+          onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
+          <span style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">⚙️</span>
+          <span style="font-weight:600">관리자 페이지</span>
+        </div>
+      </div>
     </div>
   </div>
 
