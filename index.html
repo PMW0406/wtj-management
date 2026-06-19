@@ -5784,13 +5784,6 @@ async function doChangePw(){
 
 
 
-// ══ 제품별 분석 ══════════════════════════════════════════════════════
-var _paCat = '';
-var _paCharts = {};
-function _dpac(id){ if(_paCharts[id]){ _paCharts[id].destroy(); delete _paCharts[id]; } }
-
-
-
 function loadProductAnalysis(){
   var loader  = document.getElementById('paLoader');
   var content = document.getElementById('paContent');
