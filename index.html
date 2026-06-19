@@ -2416,7 +2416,11 @@ async function _bootApp() {
 
   if (dl) dl.innerHTML = getFacilitiesLocal().map(function(f){ return '<option value="'+f.replace(/"/g,'&quot;')+'">'; }).join('');
 
-  showPage('dashboard');
+  // 새로고침 시 마지막 페이지 복원
+  var _savedPage = 'dashboard';
+  var _pageHash = window.location.hash.match(/[#&]page=([^&]+)/);
+  if(_pageHash && document.getElementById('page-'+_pageHash[1])) _savedPage = _pageHash[1];
+  showPage(_savedPage);
 
   // 기본 종료월 = 현재 월
 
@@ -3457,6 +3461,8 @@ var pageSubtitles={'dashboard':{kr:'2026년도 매출 현황 (입금기준)',jp:
 function showPage(id){
 
   _closeSidebar();
+  // 현재 페이지 URL hash에 저장 (새로고침 복원용)
+  history.replaceState(null,'',location.pathname+'#page='+id);
 
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
 
