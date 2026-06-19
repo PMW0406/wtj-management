@@ -535,6 +535,24 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
   </div>
 
 
+  <!-- 사이트 이동 -->
+  <div style="padding:8px 8px 0;border-top:1px solid #1e293b;margin-top:8px">
+    <div style="padding:6px 4px 4px;font-size:10px;font-weight:700;color:#475569;letter-spacing:.8px;text-transform:uppercase">사이트 이동</div>
+    <div onclick="(async()=>{const {data:{session:s}}=await _sb.auth.getSession();let u='https://wt-management.github.io/wontech/';if(s)u+='#at='+encodeURIComponent(s.access_token)+'&rt='+encodeURIComponent(s.refresh_token);location.href=u;})()"
+      style="border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer;transition:background .15s"
+      onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
+      <span style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#0891b2,#0e7490);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">🇰🇷</span>
+      <span style="font-weight:600">한국 영업</span>
+    </div>
+    <div onclick="(async()=>{const {data:{session:s}}=await _sb.auth.getSession();let u='https://wt-management.github.io/intl/';if(s)u+='#at='+encodeURIComponent(s.access_token)+'&rt='+encodeURIComponent(s.refresh_token);location.href=u;})()"
+      style="border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer;transition:background .15s"
+      onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
+      <span style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#7c3aed,#6d28d9);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">🌏</span>
+      <span style="font-weight:600">해외 영업</span>
+    </div>
+  </div>
+
+
   <!-- 사용자 정보 -->
 
   <div id="sidebar-user" style="display:none;padding:12px 16px;border-top:1px solid #1e293b">
@@ -5837,6 +5855,7 @@ function paRender(){
       ]
     },
     options:{
+      responsive:true, maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label+': ¥'+fmt(ctx.raw);}}}},
       scales:{x:{ticks:{font:{size:10},maxRotation:35}},y:{ticks:{callback:function(v){return '¥'+fmtShort(v);}}}}
     }
@@ -5853,7 +5872,7 @@ function paRender(){
     _paCharts['pa-pie-chart']=new Chart(pc,{
       type:'doughnut',
       data:{labels:catLabels, datasets:[{data:catLabels.map(function(c){return catTotals[c];}), backgroundColor:catLabels.map(function(c){return catColors[c];}), borderWidth:2, hoverOffset:4}]},
-      options:{cutout:'65%',plugins:{legend:{display:false}}}
+      options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{display:false}}}
     });
     var totPie=catLabels.reduce(function(s,c){return s+catTotals[c];},0);
     if(g('pa-cat-legend')) g('pa-cat-legend').innerHTML=catLabels.map(function(c){
