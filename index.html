@@ -2067,6 +2067,146 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
 
     <!-- 제품별 분석 -->
     <div class="page" id="page-product-analysis">
+
+      <!-- 로더 -->
+      <div class="loader" id="paLoader"><div class="spinner"></div><br><br>데이터 불러오는 중...</div>
+
+      <div id="paContent" style="display:none">
+        <!-- 목록 뷰 -->
+        <div id="pa-list">
+
+          <!-- 필터 -->
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap;padding:10px 14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0">
+            <span style="font-size:12px;font-weight:600;color:#374151;white-space:nowrap">📅 조회 기간</span>
+            <select id="pa-year" class="filter-input" style="width:84px" onchange="paRender()">
+              <option value="2026">2026년</option>
+              <option value="2025">2025년</option>
+              <option value="2024">2024년</option>
+              <option value="2023">2023년</option>
+              <option value="">전체</option>
+            </select>
+            <select id="pa-from" class="filter-input" style="width:70px" onchange="paRender()"><option value="01">1월</option><option value="02">2월</option><option value="03">3월</option><option value="04">4월</option><option value="05">5월</option><option value="06">6월</option><option value="07">7월</option><option value="08">8월</option><option value="09">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option></select
+            <span style="font-size:12px;color:#94a3b8">~</span>
+            <select id="pa-to" class="filter-input" style="width:70px" onchange="paRender()"><option value="01">1월</option><option value="02">2월</option><option value="03">3월</option><option value="04">4월</option><option value="05">5월</option><option value="06">6월</option><option value="07">7월</option><option value="08">8월</option><option value="09">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12" selected>12월</option></select
+            <div style="width:1px;height:20px;background:#e2e8f0;margin:0 4px"></div>
+            <span style="font-size:12px;font-weight:600;color:#374151">카테고리</span>
+            <div style="display:flex;gap:4px">
+              <button id="pab-all"  onclick="paCat('')"       class="pa-cat-btn pa-cat-active">전체</button>
+              <button id="pab-dev"  onclick="paCat('기기')"    class="pa-cat-btn">기기</button>
+              <button id="pab-tip"  onclick="paCat('팁')"     class="pa-cat-btn">팁</button>
+              <button id="pab-cart" onclick="paCat('카트리지')" class="pa-cat-btn">카트리지</button>
+              <button id="pab-cons" onclick="paCat('소모품')"  class="pa-cat-btn">소모품</button>
+            </div>
+            <input id="pa-search" class="filter-input" placeholder="제품 검색..." oninput="paRender()" style="width:130px">
+          </div>
+
+          <!-- KPI -->
+          <div class="kpi-grid" style="margin-bottom:20px">
+            <div class="kpi-card">
+              <div class="kpi-label">총 수주금액</div>
+              <div class="kpi-value" id="pa-k-total">-</div>
+              <div class="kpi-sub" id="pa-k-prev-lbl"></div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">전년 동기 대비</div>
+              <div class="kpi-value" id="pa-k-yoy" style="font-size:22px">-</div>
+              <div class="kpi-sub" id="pa-k-yoy-abs"></div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">판매 제품 수</div>
+              <div class="kpi-value" id="pa-k-count">-</div>
+              <div class="kpi-sub">조회 기간 내</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">성장 / 감소</div>
+              <div class="kpi-value" style="font-size:18px">
+                <span id="pa-k-grow" style="color:#10b981">-</span>
+                <span style="color:#94a3b8;font-size:14px"> / </span>
+                <span id="pa-k-drop" style="color:#ef4444">-</span>
+              </div>
+              <div class="kpi-sub">전년 대비 증감 제품 수</div>
+            </div>
+          </div>
+
+          <!-- 바 차트 -->
+          <div class="chart-card" style="margin-bottom:20px">
+            <div class="chart-title">
+              수주금액 비교 (올해 vs 전년) — Top 15
+              <span style="font-size:11px;font-weight:400;color:#94a3b8;margin-left:8px">
+                <span style="display:inline-flex;align-items:center;gap:3px"><span style="width:10px;height:10px;border-radius:2px;background:#0891b2;display:inline-block"></span>올해</span>
+                &nbsp;
+                <span style="display:inline-flex;align-items:center;gap:3px"><span style="width:10px;height:10px;border-radius:2px;background:#cbd5e1;display:inline-block"></span>전년</span>
+              </span>
+            </div>
+            <div style="position:relative;height:280px"><canvas id="pa-bar-chart"></canvas></div>
+          </div>
+
+          <!-- 테이블 -->
+          <div class="table-card">
+            <div class="table-header">
+              <div class="table-title">제품별 상세 내역 <span style="font-size:11px;font-weight:400;color:#94a3b8">(클릭하면 상세 보기)</span></div>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="data-table" style="min-width:620px">
+                <thead>
+                  <tr>
+                    <th style="width:32px">#</th>
+                    <th>제품명</th>
+                    <th style="width:72px">구분</th>
+                    <th class="amount">올해 수주</th>
+                    <th class="amount">전년 동기</th>
+                    <th class="amount" style="width:90px">증감률</th>
+                    <th style="width:100px">추세</th>
+                  </tr>
+                </thead>
+                <tbody id="pa-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 상세 뷰 -->
+        <div id="pa-detail" style="display:none">
+          <button onclick="paBack()" class="btn btn-secondary" style="margin-bottom:16px;display:flex;align-items:center;gap:6px;width:fit-content">
+            ← 목록으로
+          </button>
+
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+            <div id="pa-d-name" style="font-size:20px;font-weight:800;color:#0f172a"></div>
+            <span id="pa-d-cat" class="badge badge-blue"></span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;margin-bottom:20px" id="pa-d-sub"></div>
+
+          <div class="kpi-grid" style="margin-bottom:20px">
+            <div class="kpi-card"><div class="kpi-label">올해 수주</div><div class="kpi-value" id="pa-d-cur">-</div></div>
+            <div class="kpi-card"><div class="kpi-label">전년 동기</div><div class="kpi-value" id="pa-d-prev">-</div></div>
+            <div class="kpi-card"><div class="kpi-label">전년 대비</div><div class="kpi-value" id="pa-d-yoy" style="font-size:20px">-</div></div>
+            <div class="kpi-card"><div class="kpi-label">수주건수</div><div class="kpi-value" id="pa-d-cnt">-</div></div>
+          </div>
+
+          <div class="chart-grid" style="margin-bottom:20px">
+            <div class="chart-card">
+              <div class="chart-title">월별 수주 추이 (올해 vs 전년)</div>
+              <div class="chart-container"><canvas id="pa-d-month-chart"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">연도별 누계</div>
+              <div class="chart-container"><canvas id="pa-d-year-chart"></canvas></div>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-title" style="margin-bottom:12px">수주 상세 내역</div>
+            <div style="overflow-x:auto">
+              <table class="data-table">
+                <thead><tr><th>날짜</th><th>거래처</th><th class="amount">수량</th><th class="amount">단가</th><th class="amount">금액</th></tr></thead>
+                <tbody id="pa-d-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>ge-product-analysis">
       <!-- 필터 바 -->
       <div class="table-card" style="margin-bottom:16px">
         <div class="table-header" style="flex-wrap:wrap;gap:10px">
@@ -5767,235 +5907,244 @@ async function doChangePw(){
 }
 
 
-// ══ 제품별 분석 ══════════════════════════════════════════════════
+
+// ══ 제품별 분석 ══════════════════════════════════════════════════════
 var _paCat = '';
 var _paCharts = {};
 function _dpac(id){ if(_paCharts[id]){ _paCharts[id].destroy(); delete _paCharts[id]; } }
 
 function loadProductAnalysis(){
-  if(allOrders.length > 0){ paRender(); return; }
-  loadData(function(){ paRender(); });
+  var loader  = document.getElementById('paLoader');
+  var content = document.getElementById('paContent');
+  if(allOrders.length > 0){
+    if(loader)  loader.style.display  = 'none';
+    if(content) content.style.display = '';
+    paRender(); return;
+  }
+  if(loader)  loader.style.display  = 'block';
+  if(content) content.style.display = 'none';
+  loadData(function(){
+    if(loader)  loader.style.display  = 'none';
+    if(content) content.style.display = '';
+    paRender();
+  });
 }
 
 function paCat(cat){
   _paCat = cat;
   document.querySelectorAll('.pa-cat-btn').forEach(function(b){ b.classList.remove('pa-cat-active'); });
-  var map = {'':'pab-all','기기':'pab-dev','팁':'pab-tip','카트리지':'pab-cart','소모품':'pab-cons'};
-  var el = document.getElementById(map[cat]);
+  var ids = {'':'pab-all','기기':'pab-dev','팁':'pab-tip','카트리지':'pab-cart','소모품':'pab-cons'};
+  var el = document.getElementById(ids[cat]);
   if(el) el.classList.add('pa-cat-active');
   paRender();
 }
 
 function paBack(){
-  document.getElementById('pa-list').style.display = '';
+  document.getElementById('pa-list').style.display   = '';
   document.getElementById('pa-detail').style.display = 'none';
 }
 
-function paGetYear(){ return (document.getElementById('pa-year')||{}).value||''; }
-function paGetPrevYear(yr){ return yr ? String(parseInt(yr)-1) : ''; }
-
 function paRender(){
-  var yr   = paGetYear();
-  var prev = paGetPrevYear(yr);
+  var yr   = (document.getElementById('pa-year')||{}).value || '';
+  var from = (document.getElementById('pa-from')||{}).value || '01';
+  var to   = (document.getElementById('pa-to')||{}).value   || '12';
+  var prev = yr ? String(parseInt(yr)-1) : '';
   var q    = ((document.getElementById('pa-search')||{}).value||'').toLowerCase();
 
-  function filterOrds(year){ return allOrders.filter(function(o){
-    if(year && !(o.date||'').startsWith(year)) return false;
+  function inRange(dateStr, year){
+    if(!year) return true;
+    var y = dateStr.substring(0,4), m = dateStr.substring(5,7);
+    return y === year && m >= from && m <= to;
+  }
+
+  function filterO(year){ return allOrders.filter(function(o){
+    if(!inRange(o.date||'', year)) return false;
     if(_paCat){
-      if(_paCat==='소모품') return ['소모품','기타'].indexOf(o.category) !== -1;
+      if(_paCat==='소모품') return ['소모품','기타'].indexOf(o.category||'') !== -1;
       return o.category === _paCat;
     }
     return true;
   }); }
 
-  var curOrds  = filterOrds(yr);
-  var prevOrds = filterOrds(prev);
+  var curO  = filterO(yr);
+  var prevO = filterO(prev);
 
-  // aggregate
-  var curMap = {}, prevMap = {}, catMap = {};
-  curOrds.forEach(function(o){
-    var p = o.product||'(미지정)';
-    curMap[p]  = (curMap[p]||0) + (o.amount||0);
-    catMap[p]  = o.category||'-';
-  });
-  prevOrds.forEach(function(o){
-    var p = o.product||'(미지정)';
-    prevMap[p] = (prevMap[p]||0) + (o.amount||0);
-  });
+  var curM = {}, prevM = {}, catM = {}, cntM = {};
+  curO.forEach(function(o){ var p=o.product||'(미지정)'; curM[p]=(curM[p]||0)+(o.amount||0); catM[p]=o.category||'-'; cntM[p]=(cntM[p]||0)+1; });
+  prevO.forEach(function(o){ var p=o.product||'(미지정)'; prevM[p]=(prevM[p]||0)+(o.amount||0); });
 
-  // merge keys
-  var allProds = {};
-  Object.keys(curMap).forEach(function(p){ allProds[p]=1; });
-  Object.keys(prevMap).forEach(function(p){ allProds[p]=1; });
+  var all = {};
+  Object.keys(curM).forEach(function(p){all[p]=1;});
+  Object.keys(prevM).forEach(function(p){all[p]=1;});
 
-  var list = Object.keys(allProds).map(function(p){
-    return { name:p, cat:catMap[p]||'-', cur:curMap[p]||0, prev:prevMap[p]||0 };
-  }).sort(function(a,b){ return b.cur - a.cur; });
+  var list = Object.keys(all).map(function(p){
+    return {name:p, cat:catM[p]||'-', cur:curM[p]||0, prev:prevM[p]||0, cnt:cntM[p]||0};
+  }).sort(function(a,b){ return b.cur-a.cur; });
 
-  if(q) list = list.filter(function(r){ return r.name.toLowerCase().indexOf(q) !== -1; });
+  if(q) list = list.filter(function(r){ return r.name.toLowerCase().indexOf(q)!==-1; });
 
-  var totalCur  = list.reduce(function(s,r){ return s+r.cur; }, 0);
-  var totalPrev = list.reduce(function(s,r){ return s+r.prev; }, 0);
-  var yoyPct    = totalPrev>0 ? ((totalCur-totalPrev)/totalPrev*100).toFixed(1) : null;
-  var growing   = list.filter(function(r){ return r.cur > r.prev && r.prev > 0; }).length;
+  var totCur  = list.reduce(function(s,r){return s+r.cur;},0);
+  var totPrev = list.reduce(function(s,r){return s+r.prev;},0);
+  var yoyPct  = totPrev>0 ? ((totCur-totPrev)/totPrev*100).toFixed(1) : null;
+  var growing = list.filter(function(r){return r.prev>0 && r.cur>r.prev;}).length;
+  var dropping= list.filter(function(r){return r.prev>0 && r.cur<r.prev;}).length;
 
   // KPI
-  var yrLabel = yr ? yr+'년' : '전체';
-  var prevLabel = prev ? prev+'년 대비' : '';
-  var el = function(id){ return document.getElementById(id); };
-  if(el('pa-kpi-total'))    el('pa-kpi-total').textContent    = '¥'+fmt(totalCur);
-  if(el('pa-kpi-prev-lbl')) el('pa-kpi-prev-lbl').textContent = prevLabel;
-  if(el('pa-kpi-count'))    el('pa-kpi-count').textContent    = list.length+'개';
-  if(el('pa-kpi-growing'))  el('pa-kpi-growing').textContent  = growing+'개';
-  if(el('pa-kpi-yoy')){
-    if(yoyPct !== null){
-      var sign = parseFloat(yoyPct) >= 0 ? '+' : '';
-      el('pa-kpi-yoy').textContent = sign+yoyPct+'%';
-      el('pa-kpi-yoy').style.color = parseFloat(yoyPct) >= 0 ? '#10b981' : '#ef4444';
-    } else {
-      el('pa-kpi-yoy').textContent = '-'; el('pa-kpi-yoy').style.color = '#94a3b8';
-    }
+  var g = function(id){return document.getElementById(id);};
+  if(g('pa-k-total'))    g('pa-k-total').textContent    = '¥'+fmt(totCur);
+  if(g('pa-k-prev-lbl'))g('pa-k-prev-lbl').textContent = prev ? prev+'년 대비' : '';
+  if(g('pa-k-count'))    g('pa-k-count').textContent    = list.filter(function(r){return r.cur>0;}).length+'개';
+  if(g('pa-k-grow'))     g('pa-k-grow').textContent     = '+'+growing+'개';
+  if(g('pa-k-drop'))     g('pa-k-drop').textContent     = '-'+dropping+'개';
+  if(g('pa-k-yoy')){
+    if(yoyPct!==null){
+      var sign = parseFloat(yoyPct)>=0?'+':'';
+      g('pa-k-yoy').textContent = sign+yoyPct+'%';
+      g('pa-k-yoy').style.color = parseFloat(yoyPct)>=0 ? '#10b981':'#ef4444';
+    } else { g('pa-k-yoy').textContent='-'; g('pa-k-yoy').style.color='#94a3b8'; }
+  }
+  if(g('pa-k-yoy-abs') && totPrev>0){
+    var diff = totCur-totPrev;
+    g('pa-k-yoy-abs').textContent = (diff>=0?'+':'')+'¥'+fmt(Math.abs(diff));
+    g('pa-k-yoy-abs').style.color = diff>=0?'#10b981':'#ef4444';
   }
 
-  // Bar chart — top 12
-  var top12 = list.filter(function(r){ return r.cur > 0 || r.prev > 0; }).slice(0,12);
+  // Bar chart top15 (기기/팁 등 큰것 우선)
+  var top15 = list.filter(function(r){return r.cur>0||r.prev>0;}).slice(0,15);
   _dpac('pa-bar-chart');
-  var bc = document.getElementById('pa-bar-chart');
-  if(bc && top12.length) _paCharts['pa-bar-chart'] = new Chart(bc, {
+  var bc = g('pa-bar-chart');
+  if(bc && top15.length) _paCharts['pa-bar-chart'] = new Chart(bc, {
     type:'bar',
     data:{
-      labels: top12.map(function(r){ return r.name.length>16 ? r.name.substring(0,16)+'…' : r.name; }),
+      labels: top15.map(function(r){ return r.name.length>14?r.name.substring(0,14)+'…':r.name; }),
       datasets:[
-        { label:'올해', data:top12.map(function(r){ return r.cur; }), backgroundColor:'#0891b2', borderRadius:4 },
-        { label:'전년', data:top12.map(function(r){ return r.prev; }), backgroundColor:'#cbd5e1', borderRadius:4 }
+        {label:'올해',  data:top15.map(function(r){return r.cur;}),  backgroundColor:'#0891b2', borderRadius:4},
+        {label:'전년',  data:top15.map(function(r){return r.prev;}), backgroundColor:'#e2e8f0', borderRadius:4}
       ]
     },
     options:{
-      plugins:{ legend:{display:false} },
+      plugins:{legend:{display:false}},
       scales:{
-        x:{ ticks:{ font:{size:10} } },
-        y:{ ticks:{ callback:function(v){ return '¥'+fmtShort(v); } } }
+        x:{ticks:{font:{size:10},maxRotation:35}},
+        y:{ticks:{callback:function(v){return '¥'+fmtShort(v);}}}
       }
     }
   });
 
-  // Table
-  var tbody = el('pa-tbody');
+  // 테이블
+  var tbody = g('pa-tbody');
   if(!tbody) return;
-  tbody.innerHTML = list.map(function(r, i){
-    var diff = r.cur - r.prev;
-    var diffPct = r.prev > 0 ? ((diff/r.prev)*100).toFixed(1) : null;
-    var sign  = diff >= 0 ? '+' : '';
-    var color = r.prev === 0 ? '#0891b2' : diff > 0 ? '#10b981' : diff < 0 ? '#ef4444' : '#94a3b8';
-    var yoyStr = diffPct !== null ? (sign+diffPct+'%') : (r.cur > 0 ? '<span style="color:#0891b2">신규</span>' : '-');
-    var catColor = {'기기':'#0891b2','카트리지':'#7c3aed','팁':'#f59e0b','소모품':'#0d9488'}[r.cat]||'#94a3b8';
+  tbody.innerHTML = list.map(function(r,i){
+    var diff    = r.cur - r.prev;
+    var pct     = r.prev>0 ? ((diff/r.prev)*100).toFixed(1) : null;
+    var sign    = diff>=0?'+':'';
+    var color   = !r.prev ? '#0891b2' : diff>0?'#10b981':diff<0?'#ef4444':'#64748b';
+    var yoyTxt  = pct!==null ? sign+pct+'%' : (r.cur>0?'<span style="color:#0891b2;font-size:11px">신규</span>':'-');
+    var catBadge= {'기기':'badge-blue','카트리지':'badge-purple','팁':'badge-orange','소모품':'badge-green'}[r.cat]||'badge-gray';
 
-    // mini trend bar
-    var maxVal = Math.max(r.cur, r.prev, 1);
-    var curPx  = Math.round(r.cur/maxVal*48);
-    var prevPx = Math.round(r.prev/maxVal*48);
-    var trendBar =
-      '<div style="display:flex;flex-direction:column;gap:2px">' +
-      '<div style="display:flex;align-items:center;gap:3px"><div style="width:'+curPx+'px;height:6px;background:#0891b2;border-radius:2px;min-width:2px"></div><span style="font-size:9px;color:#64748b">올해</span></div>' +
-      '<div style="display:flex;align-items:center;gap:3px"><div style="width:'+prevPx+'px;height:6px;background:#cbd5e1;border-radius:2px;min-width:2px"></div><span style="font-size:9px;color:#64748b">전년</span></div>' +
+    // 미니 트렌드 바
+    var mx = Math.max(r.cur,r.prev,1);
+    var cw = Math.round(r.cur/mx*60), pw = Math.round(r.prev/mx*60);
+    var bar = '<div style="display:flex;flex-direction:column;gap:3px">' +
+      '<div style="display:flex;align-items:center;gap:4px"><div style="width:'+cw+'px;height:5px;background:#0891b2;border-radius:2px"></div></div>' +
+      '<div style="display:flex;align-items:center;gap:4px"><div style="width:'+pw+'px;height:5px;background:#cbd5e1;border-radius:2px"></div></div>' +
       '</div>';
 
     return '<tr style="cursor:pointer" onclick="paDetail('+JSON.stringify(r.name)+')" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'\'">' +
       '<td style="color:#94a3b8;font-size:11px">'+(i+1)+'</td>' +
-      '<td style="font-weight:600;font-size:13px">'+r.name+'</td>' +
-      '<td><span style="background:'+catColor+'1a;color:'+catColor+';padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">'+r.cat+'</span></td>' +
-      '<td class="amount" style="font-weight:700">'+(r.cur>0?'¥'+fmt(r.cur):'-')+'</td>' +
+      '<td style="font-weight:600">'+(r.cur===0?'<span style="color:#94a3b8">':'')+r.name+(r.cur===0?'</span>':'')+'</td>' +
+      '<td><span class="badge '+catBadge+'">'+r.cat+'</span></td>' +
+      '<td class="amount" style="font-weight:700;color:'+(r.cur>0?'#0f172a':'#94a3b8')+'">'+(r.cur>0?'¥'+fmt(r.cur):'-')+'</td>' +
       '<td class="amount" style="color:#64748b">'+(r.prev>0?'¥'+fmt(r.prev):'-')+'</td>' +
-      '<td class="amount" style="color:'+color+';font-weight:700">'+yoyStr+'</td>' +
-      '<td>'+trendBar+'</td>' +
+      '<td class="amount" style="font-weight:700;color:'+color+'">'+yoyTxt+'</td>' +
+      '<td>'+bar+'</td>' +
       '</tr>';
-  }).join('') || '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:32px">데이터 없음</td></tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:32px">조회 결과 없음</td></tr>';
 }
 
 function fmtShort(v){
-  if(!v) return '0';
-  if(Math.abs(v)>=1e8) return (v/1e8).toFixed(1)+'억';
-  if(Math.abs(v)>=1e4) return (v/1e4).toFixed(0)+'만';
+  if(!v&&v!==0)return '-';
+  var a=Math.abs(v);
+  if(a>=1e8) return (v/1e8).toFixed(1)+'억';
+  if(a>=1e4) return (v/1e4).toFixed(0)+'만';
   return fmt(v);
 }
 
 function paDetail(prodName){
-  document.getElementById('pa-list').style.display = 'none';
+  document.getElementById('pa-list').style.display   = 'none';
   document.getElementById('pa-detail').style.display = '';
 
-  var yr   = paGetYear();
-  var prev = paGetPrevYear(yr);
+  var yr   = (document.getElementById('pa-year')||{}).value||'';
+  var from = (document.getElementById('pa-from')||{}).value||'01';
+  var to   = (document.getElementById('pa-to')||{}).value||'12';
+  var prev = yr ? String(parseInt(yr)-1) : '';
 
-  var allProdOrds = allOrders.filter(function(o){ return o.product === prodName; });
-  var curOrds  = yr   ? allProdOrds.filter(function(o){ return (o.date||'').startsWith(yr);   }) : allProdOrds;
-  var prevOrds = prev ? allProdOrds.filter(function(o){ return (o.date||'').startsWith(prev); }) : [];
+  function inRange(d, y){ var m=d.substring(5,7); return d.substring(0,4)===y && m>=from && m<=to; }
 
-  var curTotal  = curOrds.reduce(function(s,o){ return s+(o.amount||0); }, 0);
-  var prevTotal = prevOrds.reduce(function(s,o){ return s+(o.amount||0); }, 0);
-  var yoyPct = prevTotal>0 ? ((curTotal-prevTotal)/prevTotal*100).toFixed(1) : null;
-  var cat = (allProdOrds[0]||{}).category||'-';
+  var all   = allOrders.filter(function(o){return o.product===prodName;});
+  var curO  = yr   ? all.filter(function(o){return inRange(o.date||'',yr);})   : all;
+  var prevO = prev ? all.filter(function(o){return inRange(o.date||'',prev);}) : [];
 
-  var el = function(id){ return document.getElementById(id); };
-  if(el('pa-d-name')) el('pa-d-name').textContent = prodName;
-  if(el('pa-d-cat')){
-    var catColor = {'기기':'#0891b2','카트리지':'#7c3aed','팁':'#f59e0b','소모품':'#0d9488'}[cat]||'#94a3b8';
-    el('pa-d-cat').textContent = cat;
-    el('pa-d-cat').style.background = catColor+'1a';
-    el('pa-d-cat').style.color = catColor;
+  var curT  = curO.reduce(function(s,o){return s+(o.amount||0);},0);
+  var prevT = prevO.reduce(function(s,o){return s+(o.amount||0);},0);
+  var yoy   = prevT>0 ? ((curT-prevT)/prevT*100).toFixed(1) : null;
+  var cat   = (all[0]||{}).category||'-';
+
+  var g = function(id){return document.getElementById(id);};
+  if(g('pa-d-name')) g('pa-d-name').textContent = prodName;
+  if(g('pa-d-cat')){
+    var cc = {'기기':'badge-blue','카트리지':'badge-purple','팁':'badge-orange','소모품':'badge-green'}[cat]||'badge-gray';
+    g('pa-d-cat').className = 'badge '+cc;
+    g('pa-d-cat').textContent = cat;
   }
-  if(el('pa-d-sub'))  el('pa-d-sub').textContent  = (yr||'전체')+'년 분석' + (prev ? ' (전년: '+prev+'년)' : '');
-  if(el('pa-d-cur'))  el('pa-d-cur').textContent  = curTotal>0 ? '¥'+fmt(curTotal) : '-';
-  if(el('pa-d-prev')) el('pa-d-prev').textContent = prevTotal>0 ? '¥'+fmt(prevTotal) : '-';
-  if(el('pa-d-cnt'))  el('pa-d-cnt').textContent  = curOrds.length+'건';
-  if(el('pa-d-yoy')){
-    if(yoyPct !== null){
-      var sign = parseFloat(yoyPct)>=0?'+':'';
-      el('pa-d-yoy').textContent = sign+yoyPct+'%';
-      el('pa-d-yoy').style.color = parseFloat(yoyPct)>=0 ? '#10b981':'#ef4444';
-    } else { el('pa-d-yoy').textContent = '-'; el('pa-d-yoy').style.color='#94a3b8'; }
+  if(g('pa-d-sub'))  g('pa-d-sub').textContent  = (yr||'전체')+'년 '+(from!=='01'||to!=='12'?parseInt(from)+'~'+parseInt(to)+'월 ':'')+'분석'+(prev?' (전년: '+prev+'년)':'');
+  if(g('pa-d-cur'))  g('pa-d-cur').textContent  = curT>0?'¥'+fmt(curT):'-';
+  if(g('pa-d-prev')) g('pa-d-prev').textContent = prevT>0?'¥'+fmt(prevT):'-';
+  if(g('pa-d-cnt'))  g('pa-d-cnt').textContent  = curO.length+'건';
+  if(g('pa-d-yoy')){
+    if(yoy!==null){var sign=parseFloat(yoy)>=0?'+':'';g('pa-d-yoy').textContent=sign+yoy+'%';g('pa-d-yoy').style.color=parseFloat(yoy)>=0?'#10b981':'#ef4444';}
+    else{g('pa-d-yoy').textContent='-';g('pa-d-yoy').style.color='#94a3b8';}
   }
 
-  // 월별 추이 차트
-  var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-  function monthSum(ords, y){ return months.map(function(m){
-    return ords.filter(function(o){ return (o.date||'').startsWith(y+'-'+m); }).reduce(function(s,o){ return s+(o.amount||0); },0);
-  }); }
-  var curMon  = yr   ? monthSum(curOrds, yr)   : Array(12).fill(0);
-  var prevMon = prev ? monthSum(prevOrds, prev) : Array(12).fill(0);
+  // 월별 차트
+  var mos = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+  function moSum(ords,y){ return mos.map(function(m){ return ords.filter(function(o){return (o.date||'').startsWith(y+'-'+m);}).reduce(function(s,o){return s+(o.amount||0);},0); }); }
+  var curMon  = yr   ? moSum(curO, yr)   : Array(12).fill(0);
+  var prevMon = prev ? moSum(prevO,prev) : Array(12).fill(0);
   _dpac('pa-d-month-chart');
-  var mc = el('pa-d-month-chart');
+  var mc = g('pa-d-month-chart');
   if(mc) _paCharts['pa-d-month-chart'] = new Chart(mc, {
     type:'bar',
     data:{
-      labels:months.map(function(m){ return parseInt(m)+'월'; }),
+      labels: mos.map(function(m){return parseInt(m)+'월';}),
       datasets:[
-        { label:'올해('+(yr||'-')+')', data:curMon,  backgroundColor:'rgba(8,145,178,.8)',  borderRadius:4 },
-        { label:'전년('+(prev||'-')+')', data:prevMon, backgroundColor:'rgba(203,213,225,.8)', borderRadius:4 }
+        {label:(yr||'올해'), data:curMon,  backgroundColor:'rgba(8,145,178,.8)',  borderRadius:4},
+        {label:(prev||'전년'),data:prevMon, backgroundColor:'rgba(226,232,240,.9)', borderRadius:4}
       ]
     },
-    options:{ plugins:{legend:{labels:{font:{size:11}}}}, scales:{ y:{ ticks:{ callback:function(v){ return '¥'+fmtShort(v); } } } } }
+    options:{plugins:{legend:{labels:{font:{size:11}}}}, scales:{y:{ticks:{callback:function(v){return '¥'+fmtShort(v);}}}}}
   });
 
-  // 연도별 누계 차트
-  var yearMap = {};
-  allProdOrds.forEach(function(o){ var y=(o.date||'').substring(0,4); yearMap[y]=(yearMap[y]||0)+(o.amount||0); });
-  var years = Object.keys(yearMap).sort().filter(function(y){ return parseInt(y)>=2020; });
+  // 연도별 차트
+  var yMap = {};
+  all.forEach(function(o){ var y=(o.date||'').substring(0,4); yMap[y]=(yMap[y]||0)+(o.amount||0); });
+  var years = Object.keys(yMap).sort().filter(function(y){return parseInt(y)>=2020;});
   _dpac('pa-d-year-chart');
-  var yc = el('pa-d-year-chart');
-  if(yc && years.length) _paCharts['pa-d-year-chart'] = new Chart(yc, {
+  var yc = g('pa-d-year-chart');
+  if(yc&&years.length) _paCharts['pa-d-year-chart'] = new Chart(yc, {
     type:'bar',
     data:{
       labels:years,
-      datasets:[{ label:'수주금액', data:years.map(function(y){ return yearMap[y]; }),
-        backgroundColor:years.map(function(y){ return y===yr?'#0891b2':'#e2e8f0'; }), borderRadius:6 }]
+      datasets:[{label:'수주금액', data:years.map(function(y){return yMap[y];}),
+        backgroundColor:years.map(function(y){return y===yr?'#0891b2':'#e2e8f0';}), borderRadius:6}]
     },
-    options:{ plugins:{legend:{display:false}}, scales:{ y:{ ticks:{ callback:function(v){ return '¥'+fmtShort(v); } } } } }
+    options:{plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:function(v){return '¥'+fmtShort(v);}}}}}
   });
 
   // 상세 테이블
-  var sorted = curOrds.slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
-  if(el('pa-d-tbody')) el('pa-d-tbody').innerHTML = sorted.map(function(o){
+  var sorted = curO.slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
+  if(g('pa-d-tbody')) g('pa-d-tbody').innerHTML = sorted.map(function(o){
     return '<tr><td>'+o.date+'</td><td style="font-size:12px">'+o.facility+'</td><td class="amount">'+fmt(o.qty)+'</td><td class="amount">¥'+fmt(o.unitPrice)+'</td><td class="amount" style="font-weight:700">¥'+fmt(o.amount)+'</td></tr>';
-  }).join('') || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:20px">해당 기간 데이터 없음</td></tr>';
+  }).join('')||'<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:20px">해당 기간 데이터 없음</td></tr>';
 }
 </script>
