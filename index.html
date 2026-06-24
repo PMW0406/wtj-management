@@ -2484,8 +2484,7 @@ async function addWtjMember() {
 
   // 비밀번호 설정 메일 발송 (마스터만)
   if (_currentUser && _currentUser.role === 'master') {
-    var send = confirm('✉️ "' + email + '" 에게 비밀번호 설정 메일을 발송할까요?
-(Supabase 계정이 없는 신규 사용자에게 필요합니다)');
+    var send = confirm('✉️ "' + email + '" 에게 비밀번호 설정 메일을 발송할까요?\n(Supabase 계정이 없는 신규 사용자에게 필요합니다)');
     if (send) {
       await _sb.auth.resetPasswordForEmail(email, {redirectTo: 'https://wt-management.github.io/wtj-management/'});
       msg.textContent = '✅ 추가 완료 + 메일 발송됨';
@@ -2520,10 +2519,6 @@ async function toggleMemberRole(id, current, isSelf) {
   if (!confirm('"' + labels[current] + '" → "' + labels[newRole] + '" 으로 변경하시겠습니까?')) return;
   await _sb.from('wtj_members').update({role: newRole}).eq('id', id);
   loadUserMgmt();
-}).eq('id', id);
-
-  loadUserMgmt();
-
 }
 
 
