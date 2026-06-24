@@ -1237,8 +1237,8 @@ function gasGet(action, data, cb, _retry) {
     .then(function(r){ return r.json(); })
     .then(function(res){ if(cb) cb(res); })
     .catch(function(e){
-      if((_retry||0) < 3) {
-        setTimeout(function(){ gasGet(action, data, cb, (_retry||0)+1); }, 3000);
+      if((_retry||0) < 5) {
+        setTimeout(function(){ gasGet(action, data, cb, (_retry||0)+1); }, 5000);
       } else {
         if(cb) cb({success:false, error:String(e)});
       }
@@ -2358,7 +2358,7 @@ function submitUpload(){
   document.getElementById('euSuccess').style.display='none';
   document.getElementById('euError').style.display='none';
   var orders=_euParsed.orders||[], pays=_euParsed.payments||[];
-  var CHUNK=50, oIdx=0, pIdx=0;
+  var CHUNK=100, oIdx=0, pIdx=0;
   function nextStep(){
     if(oIdx===0){
       gasGet('importClear',{},function(r){if(r&&r.success)nextStep();else fail(r&&r.error);});
@@ -2367,12 +2367,12 @@ function submitUpload(){
     if(oIdx===-1) oIdx=0;
     if(oIdx<orders.length){
       gasGet('importOrdersChunk',{rows:orders.slice(oIdx,oIdx+CHUNK),replace:false},function(r){
-        if(r&&r.success){oIdx+=CHUNK;setTimeout(nextStep,500);}else fail(r&&r.error);
+        if(r&&r.success){oIdx+=CHUNK;setTimeout(nextStep,3000);}else fail(r&&r.error);
       }); return;
     }
     if(pIdx<pays.length){
       gasGet('importPaymentsChunk',{rows:pays.slice(pIdx,pIdx+CHUNK),replace:pIdx===0},function(r){
-        if(r&&r.success){pIdx+=CHUNK;setTimeout(nextStep,500);}else fail(r&&r.error);
+        if(r&&r.success){pIdx+=CHUNK;setTimeout(nextStep,3000);}else fail(r&&r.error);
       }); return;
     }
     gasGetWithPush('exportNow',{},function(res){
