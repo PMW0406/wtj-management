@@ -2561,9 +2561,9 @@ function computeDashboard(orders, payments, existingTarget) {
 
 function loadData(cb) {
 
-  fetch(DATA_URL + '?t=' + Date.now())
+  _sb.from('wtj_data').select('data').eq('key','main').maybeSingle()
 
-    .then(function(r){ return r.json(); })
+    .then(function(r){ return (r.data && r.data.data) || {orders:[],payments:[]}; })
 
     .then(function(d){
 
@@ -2728,38 +2728,7 @@ function getGHToken() {
 }
 
 function pushDataJson(data) {
-
-  var token = localStorage.getItem(GH_TOKEN_KEY);
-
-  if (!token) return;
-
-  var url = 'https://api.github.com/repos/wt-management/wtj-management/contents/data.json';
-
-  fetch(url, {headers:{'Authorization':'token '+token,'User-Agent':'WTJ-App'}})
-
-    .then(function(r){ return r.ok ? r.json() : null; })
-
-    .then(function(cur){
-
-      var body = {
-
-        message: 'data: export ' + new Date().toISOString().substring(0,16),
-
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(data)))),
-
-        branch: 'main'
-
-      };
-
-      if (cur && cur.sha) body.sha = cur.sha;
-
-      return fetch(url, {method:'PUT', headers:{'Authorization':'token '+token,'Content-Type':'application/json','User-Agent':'WTJ-App'}, body:JSON.stringify(body)});
-
-    })
-
-    .then(function(r){ if(r&&r.ok) console.log('data.json push 완료'); })
-
-    .catch(function(e){ console.warn('pushDataJson 실패:', e); });
+  _sb.from('wtj_data').upsert({key:'main', data:data, updated_at:new Date().toISOString()}, {onConflict:'key'}).then(function(r){ if(r.error) console.warn('Supabase 저장 실패:', r.error); else console.log('wtj_data 저장 완료'); });
 
 }
 
