@@ -2296,15 +2296,7 @@ async function doLogout() {
 
   var ag=document.getElementById('nav-admin-group'); if(ag) ag.style.display = 'none';
 
-  document.getElementById('login-screen').style.display = 'flex';
-
-  document.getElementById('login-email').value = '';
-
-  document.getElementById('login-pw').value = '';
-
-  document.getElementById('login-btn').disabled = false;
-
-  document.getElementById('login-btn').textContent = '로그인 / ログイン';
+  location.href = 'https://wt-management.github.io/wontech/';
 
 }
 
@@ -6050,7 +6042,7 @@ window.onload = async function() {
 
   } else {
 
-    document.getElementById('login-screen').style.display = 'flex';
+    location.href = 'https://wt-management.github.io/wontech/';
 
   }
 
