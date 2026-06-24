@@ -672,6 +672,7 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
                   <th id="thQty" style="text-align:right">수량</th>
                   <th id="thUnitPrice" style="text-align:right">단가 (엔)</th>
                   <th id="thAmount" style="text-align:right">금액 (엔)</th>
+                  <th id="thPayStatus" style="text-align:center">입금상태</th>
                 </tr>
               </thead>
               <tbody id="ordersTableBody"></tbody>
@@ -2092,18 +2093,33 @@ function filterOrders(){
 }
 function renderOrders(data){
   data=data.slice().sort(function(a,b){return(b.date||'').localeCompare(a.date||'');});
+  // 수주별 입금 합계 맵
+  var paidMap={};
+  allPayments.forEach(function(p){ var ref=p.orderRef||''; if(ref) paidMap[ref]=(paidMap[ref]||0)+(p.amount||0); });
+  function payBadge(o){
+    var sid=o.stableId||''; var amt=o.amount||0; var paid=paidMap[sid]||0;
+    var jp=lang==='jp';
+    if(amt<=0) return '';
+    if(paid>=amt) return '<span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">'+(jp?'入金完了':'입금완료')+'</span>';
+    if(paid>0){
+      var pct=Math.round(paid/amt*100);
+      return '<span style="background:#fef9c3;color:#b45309;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">'+(jp?'一部入金':'일부입금')+' '+pct+'%</span>';
+    }
+    return '<span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">'+(jp?'未入金':'미입금')+'</span>';
+  }
   var total=0,tbody=document.getElementById('ordersTableBody');
-  tbody.innerHTML=data.map(function(o,i){
+  tbody.innerHTML=data.map(function(o){
     total+=o.amount||0;
     var idx=allOrders.indexOf(o);
     return '<tr><td>'+o.date+'</td><td>'+o.facility+'</td><td>'+o.product+'</td>'+
       '<td>'+catBadge(o.category)+'</td>'+
       '<td class="amount">'+fmt(o.qty)+'</td><td class="amount">¥'+fmt(o.unitPrice)+'</td><td class="amount">¥'+fmt(o.amount)+'</td>'+
+      '<td style="text-align:center">'+payBadge(o)+'</td>'+
       '<td style="white-space:nowrap">'+
         '<button class="edit-btn" onclick="openEditOrder('+idx+')">✏️</button> '+
         '<button class="del-btn" onclick="confirmDeleteOrder('+idx+')">🗑️</button>'+
       '</td></tr>';
-  }).join('')||'<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:24px">'+(lang==='jp'?'データなし':'데이터 없음')+'</td></tr>';
+  }).join('')||'<tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:24px">'+(lang==='jp'?'データなし':'데이터 없음')+'</td></tr>';
   document.getElementById('ordersFooter').textContent=(lang==='jp'?'合計 '+data.length+'件 | 合計金額':'총 '+data.length+'건 | 합계')+' ¥'+fmt(total);
 }
 
