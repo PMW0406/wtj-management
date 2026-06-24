@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>日本法人 管理システム</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -274,25 +275,28 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
 
   </div>
   <!-- 사이트 전환 드롭다운 -->
-  <div style="position:relative;padding:8px 8px 0;border-top:1px solid #1e293b">
+  <div id="site-switcher" style="position:relative;padding:0 8px 8px">
     <button id="site-switcher-btn" onclick="(function(){var d=document.getElementById('site-dropdown');d.style.display=d.style.display==='block'?'none':'block'})()"
-      style="width:100%;background:rgba(255,255,255,.05);border:1px solid #334155;border-radius:8px;padding:8px 12px;color:#94a3b8;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:8px;text-align:left">
-      <span style="font-size:14px">🌐</span><span style="flex:1;font-weight:600">사이트 전환</span><span style="font-size:10px;opacity:.6">︿</span>
+      style="width:100%;background:rgba(255,255,255,.05);border:1px solid #334155;border-radius:8px;padding:7px 10px;color:#94a3b8;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;text-align:left">
+      <i class="bi bi-grid-3x3-gap" style="font-size:13px"></i><span style="flex:1;font-weight:600">사이트 이동</span><i class="bi bi-chevron-up" style="font-size:10px"></i>
     </button>
-    <div id="site-dropdown" style="display:none;position:absolute;bottom:calc(100% + 4px);left:8px;right:8px;background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden;box-shadow:0 -8px 24px rgba(0,0,0,.5);z-index:200">
+    <div id="site-dropdown" style="display:none;position:absolute;bottom:110%;left:0;right:0;background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden;box-shadow:0 -8px 24px rgba(0,0,0,.5);z-index:200">
       <div style="padding:6px">
         <div onclick="(async function(){var s=(await _sb.auth.getSession()).data.session;var u='https://wt-management.github.io/wontech/';if(s)u+='#at='+encodeURIComponent(s.access_token)+'&rt='+encodeURIComponent(s.refresh_token)+'&app=korea';location.href=u;})()"
-          style="border-radius:6px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer;transition:background .15s"
+          style="border-radius:6px;padding:8px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer;transition:background .15s"
           onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
-          <span>🇰🇷</span><span style="flex:1">한국 영업 CRM</span><span style="font-size:11px">→</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:18px;background:#0891b2;color:#fff;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.03em;padding:0 5px;flex-shrink:0">KR</span>
+          <span style="flex:1">한국 영업</span><i class="bi bi-arrow-right" style="font-size:11px;opacity:.5"></i>
         </div>
-        <div onclick="(async function(){var s=(await _sb.auth.getSession()).data.session;var u='https://wt-management.github.io/wontech/intl.html';if(s)u+='#at='+encodeURIComponent(s.access_token)+'&rt='+encodeURIComponent(s.refresh_token)+'&app=intl';location.href=u;})()"
-          style="margin-top:4px;border-radius:6px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer;transition:background .15s"
+        <div onclick="(async function(){var s=(await _sb.auth.getSession()).data.session;var u='https://wt-management.github.io/wontech/intl.html';if(s)u+='#at='+encodeURIComponent(s.access_token)+'&rt='+encodeURIComponent(s.refresh_token);location.href=u;})()"
+          style="margin-top:2px;border-radius:6px;padding:8px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer;transition:background .15s"
           onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
-          <span>🌏</span><span style="flex:1">해외 영업 CRM</span><span style="font-size:11px">→</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:18px;background:#7c3aed;color:#fff;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.03em;padding:0 5px;flex-shrink:0">INTL</span>
+          <span style="flex:1">해외 영업</span><i class="bi bi-arrow-right" style="font-size:11px;opacity:.5"></i>
         </div>
-        <div style="margin-top:4px;background:rgba(59,130,246,.12);border-radius:6px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#60a5fa;font-size:12px;font-weight:700">
-          <span>🇯🇵</span><span style="flex:1">일본법인 관리</span><span style="font-size:11px">✓ 현재</span>
+        <div style="margin-top:2px;border-radius:6px;padding:8px 12px;display:flex;align-items:center;gap:8px;color:#f59e0b;font-size:12px;font-weight:700;background:rgba(245,158,11,.12)">
+          <span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:18px;background:#f59e0b;color:#fff;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.03em;padding:0 5px;flex-shrink:0">JP</span>
+          <span style="flex:1">일본법인 관리</span><i class="bi bi-check2" style="font-size:12px"></i>
         </div>
       </div>
     </div>
