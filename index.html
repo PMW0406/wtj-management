@@ -180,7 +180,19 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
   .kpi-grid{grid-template-columns:1fr}
   .kpi-grid-3{grid-template-columns:1fr}
   .topbar h1{font-size:14px}
-  .content{padding:12px}
+  .content{padding:10px}
+  /* 테이블 모바일 스크롤 */
+  .table-card{overflow-x:auto}
+  table{min-width:500px}
+  /* 차트 높이 줄이기 */
+  .chart-container{height:200px !important}
+  /* 달성 테이블 폰트 축소 */
+  .achieve-tbl{font-size:11px}
+  .achieve-tbl td,.achieve-tbl th{padding:5px 4px}
+  /* 버튼 탭바 */
+  .filter-input{font-size:12px;padding:4px 6px}
+  /* 모달 전체화면 */
+  #detailModal > div, #productDetailModal > div{max-height:100vh;border-radius:0;width:100%}
 }
 </style>
 </head>
@@ -269,13 +281,18 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
     </button>
     <div id="site-dropdown" style="display:none;position:absolute;bottom:calc(100% + 4px);left:8px;right:8px;background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden;box-shadow:0 -8px 24px rgba(0,0,0,.5);z-index:200">
       <div style="padding:6px">
-        <div onclick="sessionStorage.removeItem('wt_page');location.href='https://wt-management.github.io/wontech/'"
+        <div onclick="location.href='https://wt-management.github.io/wontech/'"
           style="border-radius:6px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer;transition:background .15s"
           onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
-          <span>🇰🇷</span><span style="flex:1">한국 CRM</span><span style="font-size:11px">→</span>
+          <span>🇰🇷</span><span style="flex:1">한국 영업 CRM</span><span style="font-size:11px">→</span>
         </div>
         <div style="margin-top:4px;background:rgba(59,130,246,.12);border-radius:6px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#60a5fa;font-size:12px;font-weight:700">
-          <span>🇯🇵</span><span style="flex:1">일본법인 관리</span><span style="font-size:11px">✓</span>
+          <span>🇯🇵</span><span style="flex:1">일본법인 관리</span><span style="font-size:11px">✓ 현재</span>
+        </div>
+        <div onclick="location.href='https://wt-management.github.io/wt-agency/'"
+          style="margin-top:4px;border-radius:6px;padding:9px 12px;display:flex;align-items:center;gap:8px;color:#94a3b8;font-size:12px;cursor:pointer;transition:background .15s"
+          onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background=''">
+          <span>🏪</span><span style="flex:1">대리점 관리</span><span style="font-size:11px">→</span>
         </div>
       </div>
     </div>
@@ -298,10 +315,12 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
 
 <div class="main">
   <div class="topbar">
-    <div style="display:flex;align-items:center;gap:12px">
+    <div style="display:flex;align-items:center;gap:8px">
       <button class="hamburger" id="hamburgerBtn" onclick="_toggleSidebar()" aria-label="메뉴">
         <span></span><span></span><span></span>
       </button>
+      <!-- 모바일 뒤로가기 버튼 -->
+      <button id="topbarBackBtn" onclick="goBack()" style="display:none;border:none;background:none;cursor:pointer;padding:4px 6px;color:#64748b;font-size:20px;line-height:1" aria-label="뒤로">‹</button>
       <div>
         <h1 id="pageTitle">대시보드</h1>
         <div class="topbar-sub" id="pageSubtitle">2026년도 일본법인 영업 현황</div>
@@ -1153,12 +1172,16 @@ async function _bootApp() {
   await new Promise(function(resolve) { loadData(function() { resolve(); }); });
   var dl = document.getElementById('facilityList');
   if (dl) dl.innerHTML = getFacilitiesLocal().map(function(f){ return '<option value="'+f.replace(/"/g,'&quot;')+'">'; }).join('');
-  showPage('dashboard');
+
+  // 새로고침 시 이전 페이지 복원
+  var savedPage = sessionStorage.getItem('wtj_cur_page') || 'dashboard';
   // 기본 종료월 = 현재 월
   var _nowM = String(new Date().getMonth()+1).padStart(2,'0');
   var _toEl = document.getElementById('dash-to-sel');
   if (_toEl) _toEl.value = _nowM;
-  renderDashboard(_data.dashboard);
+
+  showPage(savedPage);
+  if(_data && _data.dashboard) renderDashboard(_data.dashboard);
   showDataTimestamp();
 }
 
@@ -1722,14 +1745,32 @@ function setLang(l){
 var pageTitles={'dashboard':{kr:'대시보드',jp:'ダッシュボード'},'consumable-trend':{kr:'소모품 트렌드',jp:'消耗品トレンド'},'orders-list':{kr:'수주 현황',jp:'受注一覧'},'payments-list':{kr:'입금 현황',jp:'入金一覧'},'budget-actual':{kr:'목표 vs 실적',jp:'予実管理'},'outstanding':{kr:'미수금 현황',jp:'未収金一覧'},'excel-upload':{kr:'엑셀 업로드',jp:'Excelアップロード'},'order-input':{kr:'수주 입력',jp:'受注入力'},'payment-input':{kr:'입금 입력',jp:'入金入力'}};
 var pageSubtitles={'dashboard':{kr:'2026년도 매출 현황 (입금기준)',jp:'2026年度 売上サマリー（入金基準）'},'consumable-trend':{kr:'소모품 매출 트렌드 분석 (입금기준)',jp:'消耗品 売上トレンド分析（入金基準）'},'orders-list':{kr:'수주 기준 전체 내역',jp:'受注ベース全件一覧'},'payments-list':{kr:'입금 전체 내역',jp:'入金全件一覧'},'budget-actual':{kr:'제품별 목표 달성 현황',jp:'商品別目標達成状況'},'outstanding':{kr:'2025년 이후 미입금 수주 내역',jp:'2025年以降 未収金受注一覧'},'excel-upload':{kr:'매출현황 엑셀 → 구글 시트 동기화',jp:'売上ExcelデータをGoogleシートに同期'},'order-input':{kr:'새 수주 건 등록',jp:'新規受注登録'},'payment-input':{kr:'새 입금 건 등록',jp:'新規入金登録'}};
 
-function showPage(id){
+var _curPage = 'dashboard';
+var _prevPage = null;
+
+function showPage(id, fromHistory){
   _closeSidebar();
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
-  document.getElementById('page-'+id).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(function(item){if(item.getAttribute('onclick')&&item.getAttribute('onclick').indexOf(id)!==-1) item.classList.add('active');});
-  document.getElementById('pageTitle').textContent=pageTitles[id][lang];
-  document.getElementById('pageSubtitle').textContent=pageSubtitles[id][lang];
+  var pageEl = document.getElementById('page-'+id);
+  if(!pageEl){ id='dashboard'; pageEl=document.getElementById('page-dashboard'); }
+  pageEl.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(item){if(item.getAttribute('onclick')&&item.getAttribute('onclick').indexOf("'"+id+"'")!==-1) item.classList.add('active');});
+  document.getElementById('pageTitle').textContent=pageTitles[id]?pageTitles[id][lang]:'';
+  document.getElementById('pageSubtitle').textContent=pageSubtitles[id]?pageSubtitles[id][lang]:'';
+
+  // 페이지 기록
+  if(!fromHistory){
+    if(_curPage !== id) _prevPage = _curPage;
+    history.pushState({p:id},'','#p='+id);
+  }
+  _curPage = id;
+  sessionStorage.setItem('wtj_cur_page', id);
+
+  // 모바일 뒤로가기 버튼
+  var backBtn = document.getElementById('topbarBackBtn');
+  if(backBtn) backBtn.style.display = (id!=='dashboard' && _prevPage) ? '' : 'none';
+
   if(id==='dashboard') loadDashboard();
   else if(id==='consumable-trend') loadConsumableTrend();
   else if(id==='orders-list') loadOrdersList();
@@ -1739,6 +1780,17 @@ function showPage(id){
   else if(id==='payment-input') loadOutstandingOrders();
   else if(id==='user-mgmt') loadUserMgmt();
 }
+
+function goBack(){
+  if(_prevPage) showPage(_prevPage);
+  else showPage('dashboard');
+}
+
+window.addEventListener('popstate', function(e){
+  var page = (e.state&&e.state.p) || 'dashboard';
+  _prevPage = null;
+  showPage(page, true);
+});
 
 // ─── Formatting ─────────────────────────────────────────────
 function fmt(n){if(!n&&n!==0)return '-';return Number(n).toLocaleString('ja-JP');}
