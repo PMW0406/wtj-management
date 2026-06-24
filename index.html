@@ -2567,6 +2567,9 @@ function computeDashboard(orders, payments, existingTarget) {
 
 // ── 인보이스(매출 인식) — 매출 = 인보이스 발행 기준 ──────────────────
 var WTJ_INV = {};   // order_id → invoice row
+// 매출 인식 방식: 'payment'=현행 입금기준 유지(기본) | 'invoice'=인보이스 발행기준으로 전환
+// 지금은 인보이스 기능만 켜두고 매출 계산은 그대로 둠. 전환 준비되면 'invoice'로 바꾸면 됨.
+var WTJ_REVENUE_MODE = 'payment';
 function _orderKey(o){ return String((o&&(o.stableId||o._row||o.excelNo))||''); }
 function _todayStrJP(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
@@ -2599,8 +2602,8 @@ function applyInvoices(d, invoices, ok){
     if(m) monthlyRevenue[m]=(monthlyRevenue[m]||0)+(o.invoiceAmount||0);
   });
   d.dashboard=d.dashboard||{};
-  d.dashboard.monthlyRevenue=monthlyRevenue;
-  if(ok) d.dashboard.monthlyPayments=monthlyRevenue;   // 테이블 정상일 때만 적용(인보이스 0건이면 기존 입금기준과 동일 → 안 사라짐)
+  d.dashboard.monthlyRevenue=monthlyRevenue;   // 계산해 두되(나중 전환용), 매출 교체는 스위치가 'invoice'일 때만
+  if(ok && WTJ_REVENUE_MODE==='invoice') d.dashboard.monthlyPayments=monthlyRevenue;
   allOrders=d.orders||allOrders;
 }
 
@@ -3205,11 +3208,11 @@ var T = {
 
     lblThisPanelTitle:'📅 이달 현황',lblThisOrdersTitle:'수주 금액',lblThisPayTitle:'매출',
 
-    lblThisRateTitle:'이달 달성률 (인보이스 매출기준)',lblThisTargetTitle:'목표',
+    lblThisRateTitle:'이달 달성률 (입금기준)',lblThisTargetTitle:'목표',
 
     cumMonthStart:'1월',lblCumPanelTitle:'📊 누계',lblCumOrdersTitle:'수주 누계',lblCumPayTitle:'누계 매출',
 
-    lblUnpaidTitle:'· 미수금',lblCumRateTitle:'누계 달성률 (인보이스 매출기준)',lblCumBudgetTitle:'누계 목표',
+    lblUnpaidTitle:'· 미수금',lblCumRateTitle:'누계 달성률 (입금기준)',lblCumBudgetTitle:'누계 목표',
 
     chartTitleAchieve:'📈 월별 매출 실적 vs 목표 & 달성률',
 
@@ -3275,7 +3278,7 @@ var T = {
 
     baLblTarget:'연간 목표',baLblCumPay:'누계 매출',baLblRate:'목표 달성률',baLblYoy:'전년 매출 대비',
 
-    baKpiMonthSfx:'월까지 누계',baLblBadge:'인보이스기준',
+    baKpiMonthSfx:'월까지 누계',baLblBadge:'입금기준',
 
     euTitle:'📤 엑셀 업로드',euSub:'매출현황 엑셀 파일을 업로드하여 수주/입금 데이터를 동기화합니다',
 
@@ -3327,17 +3330,17 @@ var T = {
 
     lblThisPanelTitle:'📅 今月実績',lblThisOrdersTitle:'受注金額',lblThisPayTitle:'売上',
 
-    lblThisRateTitle:'今月達成率（請求/売上基準）',lblThisTargetTitle:'目標',
+    lblThisRateTitle:'今月達成率（入金基準）',lblThisTargetTitle:'目標',
 
     cumMonthStart:'1月',lblCumPanelTitle:'📊 累計',lblCumOrdersTitle:'受注累計',lblCumPayTitle:'累計売上',
 
-    lblUnpaidTitle:'· 未収金',lblCumRateTitle:'累計達成率（請求/売上基準）',lblCumBudgetTitle:'累計目標',
+    lblUnpaidTitle:'· 未収金',lblCumRateTitle:'累計達成率（入金基準）',lblCumBudgetTitle:'累計目標',
 
     chartTitleAchieve:'📈 月別売上実績 vs 目標 & 達成率',
 
     chartTitleCat:'🔀 機器 / 消耗品 月別受注 & 比率',
 
-    tableAchieveTitle:'📋 月別目標 · 実績 · 達成率',tableAchieveSub:'請求基準',
+    tableAchieveTitle:'📋 月別目標 · 実績 · 達成率',tableAchieveSub:'入金基準',
 
     thAchCat:'区分',thAchYear:'年間',
 
@@ -3393,7 +3396,7 @@ var T = {
 
     baLblTarget:'年間目標',baLblCumPay:'累計売上',baLblRate:'目標達成率',baLblYoy:'前年売上比',
 
-    baKpiMonthSfx:'月まで累計',baLblBadge:'請求基準',
+    baKpiMonthSfx:'月まで累計',baLblBadge:'入金基準',
 
     euTitle:'📤 Excelアップロード',euSub:'売上ExcelファイルをアップロードしてGoogleシートにデータを同期します',
 
