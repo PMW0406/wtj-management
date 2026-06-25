@@ -3914,7 +3914,61 @@ function _dashPeriodChange() {
 
 
 
+function _wtjDashWithManual(d){
+
+  if(!d||!d.monthlyPayments) return d;
+
+  var mp={}; for(var k in d.monthlyPayments) mp[k]=d.monthlyPayments[k];
+
+  (allPayments||[]).forEach(function(p){ if(p&&p.manual){ var m=p.date?p.date.slice(0,7):''; if(m) mp[m]=(mp[m]||0)+(p.amount||0); } });
+
+  var nd={}; for(var kk in d) nd[kk]=d[kk]; nd.monthlyPayments=mp; return nd;
+
+}
+
+
+
+function _wtjOutstandingWithManual(os){
+
+  if(!os||!os.rows) return os;
+
+  var manual={}; var hasM=false;
+
+  (allPayments||[]).forEach(function(p){ if(p&&p.manual&&p.orderRef){ manual[p.orderRef]=(manual[p.orderRef]||0)+(p.amount||0); hasM=true; } });
+
+  if(!hasM) return os;
+
+  var rows=[];
+
+  os.rows.forEach(function(r){
+
+    var m=manual[r.stableId]||0;
+
+    if(!m){ rows.push(r); return; }
+
+    var paid=(r.paidAmount||0)+m, out=Math.max(0,(r.orderAmount||0)-paid);
+
+    if(out<1) return;
+
+    var nr={}; for(var k in r) nr[k]=r[k]; nr.paidAmount=paid; nr.outstanding=out; rows.push(nr);
+
+  });
+
+  var total=0,fac={};
+
+  rows.forEach(function(r){ total+=(r.outstanding||0); var f=r.facility||''; if(!fac[f]) fac[f]={facility:f,count:0,outstanding:0}; fac[f].count++; fac[f].outstanding+=(r.outstanding||0); });
+
+  var rank=[]; for(var fk in fac) rank.push(fac[fk]); rank.sort(function(a,b){return b.outstanding-a.outstanding;});
+
+  return {totalOutstanding:total, totalCount:rows.length, facilityCount:rank.length, facilityRank:rank, rows:rows};
+
+}
+
+
+
 function renderDashboard(d){
+
+  d=_wtjDashWithManual(d);
 
   document.getElementById('dashLoader').style.display='none';
 
@@ -4613,7 +4667,7 @@ function loadOutstandingPage(){
 
     if(!d){document.getElementById('outstandingPageLoader').innerHTML='⚠️ '+(lang==='jp'?'読み込み失敗':'로드 실패');return;}
 
-    _osData=d.outstanding||d;
+    _osData=_wtjOutstandingWithManual(d.outstanding||d);
 
     document.getElementById('outstandingPageLoader').style.display='none';
 
