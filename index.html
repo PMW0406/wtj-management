@@ -4490,9 +4490,9 @@ function renderOrders(data){
   function invCell(o,idx){
     var jp=lang==='jp';
     if(o.invoiceNo){
-      return '<span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer" onclick="openInvoice('+idx+')" title="'+(jp?'発行日':'발행일')+': '+(o.invoiceDate||'')+' — '+(jp?'クリックで編集':'클릭하면 수정')+'">🧾 '+o.invoiceNo+'</span>';
+      return '<span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap" onclick="openInvoice('+idx+')" title="'+(jp?'発行日':'발행일')+': '+(o.invoiceDate||'')+' — '+(jp?'クリックで編集':'클릭하면 수정')+'">🧾 '+o.invoiceNo+'</span>';
     }
-    return '<button class="edit-btn" style="font-size:11px;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:6px;padding:3px 8px;cursor:pointer" onclick="openInvoice('+idx+')">'+(jp?'🧾 請求発行':'🧾 인보이스 발행')+'</button>';
+    return '<button class="edit-btn" style="font-size:11px;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:6px;padding:3px 8px;cursor:pointer;white-space:nowrap" onclick="openInvoice('+idx+')">'+(jp?'🧾 請求発行':'🧾 인보이스 발행')+'</button>';
   }
 
   var total=0,tbody=document.getElementById('ordersTableBody');
@@ -4503,7 +4503,7 @@ function renderOrders(data){
 
     var idx=allOrders.indexOf(o);
 
-    return '<tr><td>'+o.date+'</td><td>'+o.facility+'</td><td>'+(o.clinic||'<span style="color:#cbd5e1">-</span>')+'</td><td>'+o.product+'</td>'+
+    return '<tr><td style="white-space:nowrap">'+o.date+'</td><td>'+o.facility+'</td><td>'+(o.clinic||'<span style="color:#cbd5e1">-</span>')+'</td><td>'+o.product+'</td>'+
 
       '<td>'+catBadge(o.category)+'</td>'+
 
@@ -4623,9 +4623,9 @@ function renderPayments(data){
 
     return '<tr>'+
 
-      '<td>'+p.date+'</td>'+
+      '<td style="white-space:nowrap">'+p.date+'</td>'+
 
-      '<td style="color:#64748b;font-size:12px">'+orderDate+'</td>'+
+      '<td style="color:#64748b;font-size:12px;white-space:nowrap">'+orderDate+'</td>'+
 
       '<td>'+(isM?'<span style="background:#ede9fe;color:#6d28d9;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:700;margin-right:4px">수기</span>':'')+(p.description||o.facility||'-')+'</td>'+
 
@@ -4753,7 +4753,7 @@ function filterOutstandingPage(){
 
     return '<tr>'+
 
-      '<td>'+r.orderDate+'</td>'+
+      '<td style="white-space:nowrap">'+r.orderDate+'</td>'+
 
       '<td style="font-weight:600">'+r.facility+'</td>'+
 
