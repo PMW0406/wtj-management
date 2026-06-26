@@ -2639,7 +2639,7 @@ function loadData(cb) {
 
     .then(function(d){
 
-      allOrders = d.orders || [];
+      allOrders = (d.orders||[]).concat(d.manualOrders||[]);
 
       allPayments = (d.payments||[]).concat(d.manualPayments||[]);
 
@@ -3878,15 +3878,37 @@ function _wtjDashWithManual(d){
 
   if(!d||!d.monthlyPayments) return d;
 
+  var year=d.curYear||String(new Date().getFullYear());
+
+  var thisMM=String(new Date().getMonth()+1).padStart(2,'0');
+
   var mp={}; for(var k in d.monthlyPayments) mp[k]=d.monthlyPayments[k];
 
-  (allPayments||[]).forEach(function(p){ if(p&&p.manual){ var m=p.date?p.date.slice(0,7):''; if(m) mp[m]=(mp[m]||0)+(p.amount||0); } });
+  (allPayments||[]).forEach(function(p){ if(p&&p.manual){ var m=p.date?p.date.slice(0,7):''; if(m && mp.hasOwnProperty(m)) mp[m]+=(p.amount||0); } });
 
-  var nd={}; for(var kk in d) nd[kk]=d[kk]; nd.monthlyPayments=mp; return nd;
+  var mm={}; for(var k2 in d.monthlyMachine) mm[k2]=d.monthlyMachine[k2];
+
+  var mc={}; for(var k3 in d.monthlyConsumable) mc[k3]=d.monthlyConsumable[k3];
+
+  var addM=0,addC=0,addCum=0;
+
+  (allOrders||[]).forEach(function(o){ if(o&&o.manual&&o.date&&o.date.slice(0,4)===year){ var m=o.date.slice(0,7), mn=o.date.slice(5,7), amt=o.amount||0;
+
+    if(o.category==='기기'){ if(mm.hasOwnProperty(m)) mm[m]+=amt; addM+=amt; } else { if(mc.hasOwnProperty(m)) mc[m]+=amt; addC+=amt; }
+
+    if(mn<=thisMM) addCum+=amt; } });
+
+  var nd={}; for(var kk in d) nd[kk]=d[kk];
+
+  nd.monthlyPayments=mp; nd.monthlyMachine=mm; nd.monthlyConsumable=mc;
+
+  nd.totalMachine=(d.totalMachine||0)+addM; nd.totalConsumable=(d.totalConsumable||0)+addC; nd.totalOrders=(d.totalOrders||0)+addM+addC;
+
+  if(d.cumToDate){ var ct={}; for(var c in d.cumToDate) ct[c]=d.cumToDate[c]; ct.orders=(ct.orders||0)+addCum; nd.cumToDate=ct; }
+
+  return nd;
 
 }
-
-
 
 function _wtjOutstandingWithManual(os){
 
@@ -3896,7 +3918,9 @@ function _wtjOutstandingWithManual(os){
 
   (allPayments||[]).forEach(function(p){ if(p&&p.manual&&p.orderRef){ manual[p.orderRef]=(manual[p.orderRef]||0)+(p.amount||0); hasM=true; } });
 
-  if(!hasM) return os;
+  var manOrders=(allOrders||[]).filter(function(o){return o&&o.manual&&o.date&&o.date>='2025-01-01';});
+
+  if(!hasM && !manOrders.length) return os;
 
   var rows=[];
 
@@ -3914,6 +3938,20 @@ function _wtjOutstandingWithManual(os){
 
   });
 
+  var now=new Date();
+
+  manOrders.forEach(function(o){
+
+    var paid=manual[o.stableId]||0, out=Math.max(0,(o.amount||0)-paid);
+
+    if(out<1) return;
+
+    var el=0; try{ el=Math.floor((now-new Date(o.date))/86400000); }catch(e){}
+
+    rows.push({orderDate:o.date,facility:o.facility||'',product:o.product||'',category:o.category||'',qty:o.qty||0,orderAmount:o.amount||0,paidAmount:paid,outstanding:out,elapsed:el,stableId:o.stableId||'',clinic:o.clinic||''});
+
+  });
+
   var total=0,fac={};
 
   rows.forEach(function(r){ total+=(r.outstanding||0); var f=r.facility||''; if(!fac[f]) fac[f]={facility:f,count:0,outstanding:0}; fac[f].count++; fac[f].outstanding+=(r.outstanding||0); });
@@ -3923,8 +3961,6 @@ function _wtjOutstandingWithManual(os){
   return {totalOutstanding:total, totalCount:rows.length, facilityCount:rank.length, facilityRank:rank, rows:rows};
 
 }
-
-
 
 function renderDashboard(d){
 
@@ -4463,7 +4499,9 @@ function renderOrders(data){
 
     var idx=allOrders.indexOf(o);
 
-    return '<tr><td style="white-space:nowrap">'+o.date+'</td><td>'+o.facility+'</td><td>'+(o.clinic||'<span style="color:#cbd5e1">-</span>')+'</td><td>'+o.product+'</td>'+
+    var isMO=!!o.manual;
+
+    return '<tr><td style="white-space:nowrap">'+o.date+'</td><td>'+(isMO?'<span style="background:#ede9fe;color:#6d28d9;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:700;margin-right:4px">수기</span>':'')+o.facility+'</td><td>'+(o.clinic||'<span style="color:#cbd5e1">-</span>')+'</td><td>'+o.product+'</td>'+
 
       '<td>'+catBadge(o.category)+'</td>'+
 
@@ -5581,35 +5619,45 @@ function submitOrder(){
 
   var btn=document.getElementById('btnSubmitOrder');
 
-  var d=document.getElementById('inOrderDate').value;
+  var date=document.getElementById('inOrderDate').value;
 
   var f=document.getElementById('inFacility').value.trim();
 
-  var p=document.getElementById('inProduct').value;
+  var p=document.getElementById('inProduct').value.trim();
 
-  var u=document.getElementById('inUnitPrice').value;
+  var u=parseFloat(String(document.getElementById('inUnitPrice').value).replace(/,/g,''))||0;
 
-  var q=document.getElementById('inQty').value;
+  var q=parseInt(document.getElementById('inQty').value)||1;
 
-  var opt=document.getElementById('inProduct').options[document.getElementById('inProduct').selectedIndex];
+  var cat='기기'; var _dl=document.getElementById('productList');
 
-  var cat=opt.getAttribute('data-cat')||'기기';
+  if(_dl){ for(var _i=0;_i<_dl.options.length;_i++){ if(_dl.options[_i].value===p){ cat=_dl.options[_i].getAttribute('data-cat')||'기기'; break; } } }
 
-  if(!d||!f||!p||!u||!q){alert(lang==='kr'?'모든 필수 항목을 입력해주세요.':'必須項目を入力してください。');return;}
+  if(!date||!f||!p||!u||!q){alert(lang==='kr'?'모든 필수 항목을 입력해주세요.':'必須項目を入力してください。');return;}
+
+  if(!_data){alert(lang==='jp'?'データ読み込み後に再試行してください。':'데이터 로딩 후 다시 시도하세요.');return;}
 
   btn.disabled=true;btn.textContent=(lang==='jp'?'登録中...':'등록 중...');
 
-  gasGetWithPush('addOrder',{date:d,facility:f,product:p,unitPrice:u,qty:q,category:cat},function(res){
+  if(!_data.manualOrders) _data.manualOrders=[];
 
-    btn.disabled=false;btn.textContent=T[lang].btnSubmitOrder;
+  var sid='MO'+Date.now()+Math.floor(Math.random()*1000);
 
-    var ok=document.getElementById('orderSuccess'),err=document.getElementById('orderError');
+  _data.manualOrders.push({stableId:sid,manual:true,date:date,facility:f,product:p,category:cat,unitPrice:u,qty:q,amount:u*q,clinic:f,note:''});
 
-    if(res&&res.success){ok.textContent=T[lang].msgOrderSuccess;ok.style.display='block';err.style.display='none';resetOrderForm();setTimeout(function(){ok.style.display='none';},3000);}
+  pushDataJson(_data);
 
-    else{err.style.display='block';err.textContent='❌ '+(res&&res.error||'오류');}
+  allOrders=(_data.orders||[]).concat(_data.manualOrders||[]);
 
-  });
+  _ctData=null;_baData=null;_osData=null;
+
+  btn.disabled=false;btn.textContent=T[lang].btnSubmitOrder;
+
+  var ok=document.getElementById('orderSuccess'),err=document.getElementById('orderError');
+
+  ok.textContent=(lang==='jp'?'✅ 受注を登録しました。':'✅ 수주가 등록되었습니다.');ok.style.display='block';err.style.display='none';
+
+  resetOrderForm();setTimeout(function(){ok.style.display='none';},3000);
 
 }
 
@@ -5973,7 +6021,7 @@ function openEditOrder(idx){
 
   if(!o) return;
 
-  document.getElementById('eoRow').value=o._row;
+  document.getElementById('eoRow').value=o.manual?o.stableId:(o._row||'');
 
   document.getElementById('eoDate').value=o.date;
 
@@ -5999,49 +6047,45 @@ function closeEditOrder(){ document.getElementById('modalEditOrder').style.displ
 
 function saveEditOrder(){
 
-  var btn=document.getElementById('btnSaveOrder');
+  var sid=document.getElementById('eoRow').value;
 
-  btn.disabled=true; btn.textContent=(lang==='jp'?'保存中...':'저장 중...');
+  var d={date:document.getElementById('eoDate').value, facility:document.getElementById('eoFacility').value.trim(),
 
-  var d={
+    product:document.getElementById('eoProduct').value.trim(), category:document.getElementById('eoCategory').value,
 
-    _row: document.getElementById('eoRow').value,
+    unitPrice:parseFloat(String(document.getElementById('eoUnitPrice').value).replace(/,/g,''))||0,
 
-    date: document.getElementById('eoDate').value,
-
-    facility: document.getElementById('eoFacility').value.trim(),
-
-    product: document.getElementById('eoProduct').value.trim(),
-
-    category: document.getElementById('eoCategory').value,
-
-    unitPrice: document.getElementById('eoUnitPrice').value,
-
-    qty: document.getElementById('eoQty').value,
-
-    note: document.getElementById('eoNote').value
-
-  };
+    qty:parseInt(document.getElementById('eoQty').value)||1, note:document.getElementById('eoNote').value};
 
   if(!d.date||!d.facility||!d.product||!d.unitPrice||!d.qty){
 
     document.getElementById('eoError').textContent=(lang==='jp'?'必須項目を入力してください。':'필수 항목을 모두 입력해주세요.');
 
-    document.getElementById('eoError').style.display='block';
-
-    btn.disabled=false; btn.textContent=(lang==='jp'?'保存':'저장'); return;
+    document.getElementById('eoError').style.display='block'; return;
 
   }
 
-  gasGetWithPush('updateOrder',d,function(res){
+  if(String(sid).indexOf('MO')===0){
 
-    btn.disabled=false; btn.textContent=(lang==='jp'?'保存':'저장');
+    if(_data&&_data.manualOrders){
 
-    if(res&&res.success){closeEditOrder();loadOrdersList();}
+      for(var i=0;i<_data.manualOrders.length;i++){ if(_data.manualOrders[i].stableId===sid){ var o=_data.manualOrders[i];
 
-    else{document.getElementById('eoError').textContent='❌ '+(res&&res.error||'오류');document.getElementById('eoError').style.display='block';}
+        o.date=d.date;o.facility=d.facility;o.product=d.product;o.category=d.category;o.unitPrice=d.unitPrice;o.qty=d.qty;o.amount=d.unitPrice*d.qty;o.clinic=d.facility;o.note=d.note; break; } }
 
-  });
+      pushDataJson(_data);
+
+      allOrders=(_data.orders||[]).concat(_data.manualOrders||[]);
+
+      _ctData=null;_baData=null;_osData=null;
+
+    }
+
+    closeEditOrder(); loadOrdersList(); return;
+
+  }
+
+  alert(lang==='jp'?'資金日報データは編集できません。手動追加分のみ編集できます。':'자금일보 데이터는 수정할 수 없습니다. 수기 추가분만 수정됩니다.');
 
 }
 
@@ -6051,19 +6095,25 @@ function confirmDeleteOrder(idx){
 
   if(!o) return;
 
+  if(!o.manual){ alert(lang==='jp'?'資金日報データは削除できません。手動追加分のみ削除できます。':'자금일보 데이터는 삭제할 수 없습니다. 수기 추가분만 삭제됩니다.'); return; }
+
   if(!confirm((o.date+' / '+o.facility+' / '+o.product+'\n\n'+(lang==='jp'?'この受注を削除しますか？':'이 수주 건을 삭제할까요?')))) return;
 
-  gasGetWithPush('deleteOrder',{row:o._row},function(res){
+  if(_data&&_data.manualOrders){
 
-    if(res&&res.success){loadOrdersList();}
+    _data.manualOrders=_data.manualOrders.filter(function(x){return x.stableId!==o.stableId;});
 
-    else alert('❌ '+(res&&res.error||'오류'));
+    pushDataJson(_data);
 
-  });
+    allOrders=(_data.orders||[]).concat(_data.manualOrders||[]);
+
+    _ctData=null;_baData=null;_osData=null;
+
+  }
+
+  loadOrdersList();
 
 }
-
-
 
 function openAddPayment(){
 
