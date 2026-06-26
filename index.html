@@ -2324,7 +2324,7 @@ function _applyLoginUI() {
 
 
 async function _bootApp() {
-  var savedPage = location.hash.includes('at=') ? 'dashboard' : (sessionStorage.getItem('wtj_cur_page') || 'dashboard');
+  var savedPage = 'dashboard';   // 진입 시 항상 대시보드(첫 메뉴)
   var _nowM = String(new Date().getMonth()+1).padStart(2,'0');
   var _toEl = document.getElementById('dash-to-sel');
   if (_toEl) _toEl.value = _nowM;
