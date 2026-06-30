@@ -2433,7 +2433,7 @@ function _applyLoginUI() {
 async function _bootApp() {
   var _nav=(performance.getEntriesByType('navigation')[0]||{}).type;   // reload=새로고침 / navigate=신규진입
   var _sv=sessionStorage.getItem('wtj_cur_page');
-  var savedPage=(_nav==='reload' && _sv && document.getElementById(_sv)) ? _sv : 'dashboard';   // 새로고침=머문 페이지, 신규=대시보드
+  var savedPage=(_nav==='reload' && _sv && document.getElementById('page-'+_sv)) ? _sv : 'dashboard';   // 새로고침=머문 페이지, 신규=대시보드
   var _nowM = String(new Date().getMonth()+1).padStart(2,'0');
   var _toEl = document.getElementById('dash-to-sel');
   if (_toEl) _toEl.value = _nowM;
