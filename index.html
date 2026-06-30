@@ -2040,13 +2040,13 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
   </div>
   <div id="esHero"></div>
   <div id="esKpi" class="esk"></div>
-  <div class="essec"><div class="esst">📈 제품별 실적 <span style="font-weight:400;color:#94a3b8;font-size:11px">(전년 동기 대비 · 클릭 시 내역)</span></div><div id="esProd" class="escard"></div></div>
+  <div class="essec"><div class="esst">📦 품목별 실적 <span style="font-weight:400;color:#94a3b8;font-size:11px">(제품 / 소모품 · 전년 대비 · 클릭 시 내역)</span></div><div id="esProd" class="esdual"></div></div>
   <div class="essec"><div class="esst">🏥 거래처 · 클리닉</div><div id="esConc" style="margin-bottom:12px"></div><div id="esClinic" class="esdual"></div></div>
   <div class="essec"><div class="esst">⚠️ 미수 현황</div><div id="esAge"></div></div>
 </div>
 
     <div id="esDrill" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:1100;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeEsDrill()">
-  <div style="background:#fff;border-radius:14px;max-width:960px;width:100%;max-height:86vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.28)">
+  <div style="background:#fff;border-radius:14px;max-width:1320px;width:94vw;max-height:88vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.28)">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid #eef2f7;position:sticky;top:0;background:#fff;z-index:1">
       <div id="esDrillTitle" style="font-size:15px;font-weight:800;color:#0f172a"></div>
       <button onclick="closeEsDrill()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8">&#10005;</button>
@@ -2057,24 +2057,24 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
 </div>
 
     <div class="page" id="page-customer-analysis">
-  <div class="form-card" style="margin-bottom:16px">
-    <div class="form-title" id="caTitle">🔍 거래처 분석</div>
-    <div class="form-sub" id="caSub">거래처를 선택하면 매입·수금·미수를 다각도로 분석합니다</div>
-    <div style="display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap">
-      <input type="text" id="caSearch" list="caList" placeholder="거래처/클리닉 검색 또는 선택" autocomplete="off" oninput="renderCustomerAnalysis()" style="flex:1;min-width:220px;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px">
-      <datalist id="caList"></datalist>
-      <select id="caYear" onchange="renderCustomerAnalysis()" style="padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px">
-        <option value="">전체기간</option><option value="2026">2026년</option><option value="2025">2025년</option><option value="2024">2024년</option>
-      </select>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+    <div style="font-size:18px;font-weight:700;color:#0f172a;white-space:nowrap">🔍 거래처 분석</div>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <input type="text" id="caSearch" placeholder="거래처 검색" autocomplete="off" oninput="renderCaList()" style="width:200px;padding:8px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px">
+      <select id="caYear" class="filter-input" style="width:98px" onchange="caRefresh()"><option value="">전체기간</option><option value="2026">2026년</option><option value="2025">2025년</option><option value="2024">2024년</option></select>
     </div>
   </div>
-  <div id="caEmpty" style="text-align:center;color:#94a3b8;padding:48px;font-size:14px">거래처를 선택하세요</div>
-  <div id="caContent" style="display:none">
-    <div id="caKpi" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px"></div>
-    <div class="table-card" style="margin-bottom:16px"><div class="table-header"><div class="table-title" id="caMonthTitle">📅 월별 수주·수금</div></div><div style="overflow-x:auto"><table><thead id="caMonthHead"></thead><tbody id="caMonthBody"></tbody></table></div></div>
-    <div class="table-card" style="margin-bottom:16px"><div class="table-header"><div class="table-title" id="caProdTitle">📦 제품별 매입</div></div><div style="overflow-x:auto"><table><thead id="caProdHead"></thead><tbody id="caProdBody"></tbody></table></div></div>
-    <div class="table-card" id="caClinicCard" style="margin-bottom:16px;display:none"><div class="table-header"><div class="table-title" id="caClinicTitle">🏥 클리닉별 매입 (대리점)</div></div><div style="overflow-x:auto"><table><thead id="caClinicHead"></thead><tbody id="caClinicBody"></tbody></table></div></div>
-    <div class="table-card"><div class="table-header"><div class="table-title" id="caTxnTitle">📋 거래 상세</div></div><div style="overflow-x:auto"><table><thead id="caTxnHead"></thead><tbody id="caTxnBody"></tbody></table></div></div>
+  <div id="caListWrap" class="escard"><div style="font-size:13px;font-weight:700;color:#334155;padding:8px 12px 12px">거래처 목록 <span style="font-weight:400;color:#94a3b8;font-size:11px">(클릭하면 상세 분석)</span></div><div style="overflow-x:auto"><table class="estab"><thead id="caListHead"></thead><tbody id="caListBody"></tbody></table></div></div>
+  <div id="caDetail" style="display:none;margin-top:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div id="caDetailName" style="font-size:16px;font-weight:700;color:#0f172a"></div>
+      <button onclick="caBackToList()" style="padding:7px 14px;border:1px solid #e2e8f0;background:#fff;border-radius:8px;cursor:pointer;font-size:13px;color:#475569">← 목록</button>
+    </div>
+    <div id="caKpi" class="esk" style="grid-template-columns:repeat(6,1fr);margin-bottom:18px"></div>
+    <div class="essec"><div class="esst">📅 월별 수주·수금 <span style="font-weight:400;color:#94a3b8;font-size:11px">(클릭하면 해당 월 내역)</span></div><div class="escard"><div style="overflow-x:auto"><table class="estab"><thead id="caMonthHead"></thead><tbody id="caMonthBody"></tbody></table></div></div></div>
+    <div class="essec"><div class="esst">📦 제품별 매입 <span style="font-weight:400;color:#94a3b8;font-size:11px">(클릭하면 내역)</span></div><div class="escard"><div style="overflow-x:auto"><table class="estab"><thead id="caProdHead"></thead><tbody id="caProdBody"></tbody></table></div></div></div>
+    <div class="essec" id="caClinicCard" style="display:none"><div class="esst">🏥 클리닉별 매입 (대리점) <span style="font-weight:400;color:#94a3b8;font-size:11px">(클릭하면 내역)</span></div><div class="escard"><div style="overflow-x:auto"><table class="estab"><thead id="caClinicHead"></thead><tbody id="caClinicBody"></tbody></table></div></div></div>
+    <div class="essec"><div class="esst">📋 거래 상세</div><div class="escard"><div style="overflow-x:auto"><table class="estab"><thead id="caTxnHead"></thead><tbody id="caTxnBody"></tbody></table></div></div></div>
   </div>
 </div>
 
@@ -3870,9 +3870,12 @@ function renderExecSummary(){
     card((jp?'回収率':'수금률'),coll.toFixed(0)+'%',(jp?'未収 ':'미수 ')+_amt(outTot),null,'#8b5cf6')+
     card((jp?'月平均売上':'월평균 매출'),_amt(pay26/nmon),nmon+(jp?'ヶ月平均':'개월 평균'),null,'#0ea5e9');
   // 제품별 실적 표 (전년/올해/성장률, 클릭)
-  var prows=grow.filter(function(x){return x.a>0||x.b>0;}).sort(function(a,b){return b.a-a.a;}).slice(0,12);
-  var th='<table class="estab"><thead><tr><th>'+(jp?'商品':'제품')+'</th><th class="num">'+(jp?'前年':'전년')+'</th><th class="num">'+(jp?'当年':'올해')+'</th><th class="num">'+(jp?'成長率':'성장률')+'</th></tr></thead><tbody>';
-  document.getElementById('esProd').innerHTML=th+prows.map(function(x){var gc=_rag(x.g);return '<tr class="clk" onclick="openExecDrill(\'product\',\''+_dq(x.k)+'\')"><td>'+x.k+'</td><td class="num" style="color:#94a3b8">'+_amt(x.b)+'</td><td class="num" style="font-weight:700">'+_amt(x.a)+'</td><td class="num" style="color:'+gc+';font-weight:700">'+(x.g!==null?(x.g>=0?'+':'')+x.g.toFixed(1)+'%':(jp?'新規':'신규'))+'</td></tr>';}).join('')+'</tbody></table>';
+  var prodCat={}; orders.forEach(function(o){if(inR(o.date,year)||inR(o.date,prev))prodCat[o.product||'-']=o.category;});
+  function ptab(items){var th='<table class="estab"><thead><tr><th>'+(jp?'品目':'품목')+'</th><th class="num">'+(jp?'前年':'전년')+'</th><th class="num">'+(jp?'当年':'올해')+'</th><th class="num">'+(jp?'成長率':'성장률')+'</th></tr></thead><tbody>';return th+(items.length?items.map(function(x){var gc=_rag(x.g);return '<tr class="clk" onclick="openExecDrill(\'product\',\''+_dq(x.k)+'\')"><td>'+x.k+'</td><td class="num" style="color:#94a3b8">'+_amt(x.b)+'</td><td class="num" style="font-weight:700">'+_amt(x.a)+'</td><td class="num" style="color:'+gc+';font-weight:700">'+(x.g!==null?(x.g>=0?'+':'')+x.g.toFixed(1)+'%':(jp?'新規':'신규'))+'</td></tr>';}).join(''):'<tr><td colspan="4" style="color:#94a3b8;text-align:center;padding:12px">-</td></tr>')+'</tbody></table>';}
+  var pall=grow.filter(function(x){return x.a>0||x.b>0;}).sort(function(a,b){return b.a-a.a;});
+  var pMach=pall.filter(function(x){return prodCat[x.k]==='기기';});
+  var pCons=pall.filter(function(x){return prodCat[x.k]!=='기기';});
+  document.getElementById('esProd').innerHTML='<div class="esdl"><div class="t">🔧 '+(jp?'機器':'제품(기기)')+'</div>'+ptab(pMach)+'</div><div class="esdl"><div class="t">📦 '+(jp?'消耗品':'소모품')+'</div>'+ptab(pCons)+'</div>';
   // 집중도
   var facY={}; orders.forEach(function(o){if(inR(o.date,year)){var f=o.facility||'-';facY[f]=(facY[f]||0)+(o.amount||0);}});
   var facArr=Object.keys(facY).map(function(f){return {f:f,a:facY[f]};}).sort(function(a,b){return b.a-a.a;});
@@ -3901,19 +3904,27 @@ function renderExecSummary(){
   document.getElementById('esAge').innerHTML=ag;
 }
 function _dq(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
-function openExecDrill(field,value){
+function openDrill(opts){
+  opts=opts||{};
   var jp=lang==='jp';
-  var year=document.getElementById('esYear')?document.getElementById('esYear').value:'2026';
   var paid={}; (allPayments||[]).forEach(function(p){if(p.orderRef)paid[p.orderRef]=(paid[p.orderRef]||0)+(p.amount||0);});
-  var rows=(allOrders||[]).filter(function(o){return o[field]===value && String(o.date||'').slice(0,4)===year;}).sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));});
-  document.getElementById('esDrillTitle').textContent=value+'  ('+year+(jp?'年 ':'년 ')+rows.length+(jp?'件':'건')+')';
+  var rows=(allOrders||[]).filter(function(o){
+    if(opts.facility!=null && o.facility!==opts.facility) return false;
+    if(opts.product!=null && o.product!==opts.product) return false;
+    if(opts.clinic!=null && o.clinic!==opts.clinic) return false;
+    if(opts.ym!=null){ if(String(o.date||'').slice(0,7)!==opts.ym) return false; }
+    else if(opts.year){ if(String(o.date||'').slice(0,4)!==opts.year) return false; }
+    return true;
+  }).sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));});
+  var tot=0; rows.forEach(function(o){tot+=o.amount||0;});
+  document.getElementById('esDrillTitle').textContent=(opts.title||'')+'  ('+rows.length+(jp?'件':'건')+')';
   var nw='white-space:nowrap';
-  document.getElementById('esDrillHead').innerHTML='<tr><th style="text-align:left;'+nw+'">'+(jp?'日付':'날짜')+'</th><th style="text-align:left;'+nw+'">'+(jp?'取引先':'거래처')+'</th><th style="text-align:left;'+nw+'">'+(jp?'クリニック':'클리닉')+'</th><th style="text-align:left;'+nw+'">'+(jp?'商品':'제품')+'</th><th style="text-align:right;'+nw+'">'+(jp?'数量':'수량')+'</th><th style="text-align:right;'+nw+'">'+(jp?'金額':'금액')+'</th><th style="text-align:center;'+nw+'">'+(jp?'入金':'입금')+'</th></tr>';
-  var tot=0;
-  document.getElementById('esDrillBody').innerHTML=rows.map(function(o){tot+=o.amount||0;var pd=paid[o.stableId]||0;var amt=o.amount||0;var st=pd>=amt?'<span style="color:#16a34a">'+(jp?'完了':'완료')+'</span>':pd>0?'<span style="color:#b45309">'+(jp?'一部':'일부')+'</span>':'<span style="color:#dc2626">'+(jp?'未':'미입금')+'</span>';return '<tr><td style="'+nw+'">'+o.date+'</td><td style="'+nw+'">'+(o.facility||'-')+'</td><td style="'+nw+'">'+(o.clinic||'-')+'</td><td style="'+nw+'">'+o.product+'</td><td class="num">'+fmt(o.qty)+'</td><td class="num">'+_amt(amt)+'</td><td style="text-align:center;'+nw+'">'+st+'</td></tr>';}).join('')||'<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:18px">-</td></tr>';
+  document.getElementById('esDrillHead').innerHTML='<tr><th style="text-align:left;'+nw+'">'+(jp?'日付':'날짜')+'</th><th style="text-align:left;'+nw+'">'+(jp?'取引先':'거래처')+'</th><th style="text-align:left;'+nw+'">'+(jp?'クリニック':'클리닉')+'</th><th style="text-align:left;'+nw+'">'+(jp?'商品':'제품')+'</th><th style="text-align:center;'+nw+'">'+(jp?'区分':'구분')+'</th><th style="text-align:right;'+nw+'">'+(jp?'数量':'수량')+'</th><th style="text-align:right;'+nw+'">'+(jp?'金額':'금액')+'</th><th style="text-align:center;'+nw+'">'+(jp?'入金':'입금')+'</th></tr>';
+  document.getElementById('esDrillBody').innerHTML=rows.map(function(o){var pd=paid[o.stableId]||0;var amt=o.amount||0;var st=pd>=amt?'<span style="color:#16a34a">'+(jp?'完了':'완료')+'</span>':pd>0?'<span style="color:#b45309">'+(jp?'一部':'일부')+'</span>':'<span style="color:#dc2626">'+(jp?'未':'미입금')+'</span>';return '<tr><td style="'+nw+'">'+o.date+'</td><td style="'+nw+'">'+(o.facility||'-')+'</td><td style="'+nw+'">'+(o.clinic||'-')+'</td><td style="'+nw+'">'+o.product+'</td><td style="text-align:center">'+catBadge(o.category)+'</td><td class="num">'+fmt(o.qty)+'</td><td class="num">'+_amt(amt)+'</td><td style="text-align:center;'+nw+'">'+st+'</td></tr>';}).join('')||'<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:18px">-</td></tr>';
   document.getElementById('esDrillFoot').textContent=(jp?'合計 ':'합계 ')+rows.length+(jp?'件 · ':'건 · ')+_amt(tot);
   document.getElementById('esDrill').style.display='flex';
 }
+function openExecDrill(field,value){ var o={title:value, year:(document.getElementById('esYear')||{}).value||''}; o[field]=value; openDrill(o); }
 function closeEsDrill(){ document.getElementById('esDrill').style.display='none'; }
 
 function loadDashboard(){
@@ -4865,25 +4876,29 @@ var _osData=null;
 
 function _caKrw(j){ return (_jpyRate>0)?' ('+fmtKRW(j*_jpyRate/100)+')':''; }
 var _caInit=false;
-function loadCustomerAnalysis(){
-  function done(){
-    var seen={}, facs=[];
-    (allOrders||[]).forEach(function(o){ if(o.facility&&!seen[o.facility]){seen[o.facility]=1;facs.push(o.facility);} });
-    facs.sort();
-    document.getElementById('caList').innerHTML=facs.map(function(f){return '<option value="'+String(f).replace(/"/g,'&quot;')+'">';}).join('');
-    renderCustomerAnalysis();
-  }
-  if(_data){done();}else{loadData(done);}
-}
-function renderCustomerAnalysis(){
+var _caSel=null;
+function loadCustomerAnalysis(){ if(_data){renderCaList();}else{loadData(renderCaList);} }
+function caRefresh(){ if(_caSel && document.getElementById('caDetail').style.display!=='none'){ renderCaDetail(_caSel); } renderCaList(); }
+function renderCaList(){
   var jp=lang==='jp';
-  var fac=(document.getElementById('caSearch').value||'').trim();
-  var yr=document.getElementById('caYear').value;
-  var emptyEl=document.getElementById('caEmpty'), contEl=document.getElementById('caContent');
-  if(!fac){ emptyEl.textContent=(jp?'取引先を選択してください':'거래처를 선택하세요'); emptyEl.style.display='block'; contEl.style.display='none'; return; }
+  var q=((document.getElementById('caSearch')||{}).value||'').toLowerCase();
+  var yr=(document.getElementById('caYear')||{}).value;
+  var paid={}; (allPayments||[]).forEach(function(p){if(p.orderRef)paid[p.orderRef]=(paid[p.orderRef]||0)+(p.amount||0);});
+  var o2f={}; (allOrders||[]).forEach(function(o){o2f[o.stableId]=o.facility;});
+  var fmap={};
+  (allOrders||[]).forEach(function(o){ if(yr && String(o.date||'').slice(0,4)!==yr) return; var f=o.facility||'-'; if(!fmap[f])fmap[f]={ord:0,pay:0,out:0,cnt:0,cl:{}}; fmap[f].ord+=(o.amount||0); fmap[f].cnt++; if(o.clinic)fmap[f].cl[o.clinic]=1; fmap[f].out+=Math.max(0,(o.amount||0)-(paid[o.stableId]||0)); });
+  (allPayments||[]).forEach(function(p){ if(yr && String(p.date||'').slice(0,4)!==yr) return; var f=o2f[p.orderRef]; if(f&&fmap[f])fmap[f].pay+=(p.amount||0); });
+  var arr=Object.keys(fmap).filter(function(f){return !q||f.toLowerCase().indexOf(q)>=0;}).map(function(f){return {f:f,d:fmap[f]};}).sort(function(a,b){return b.d.ord-a.d.ord;});
+  document.getElementById('caListHead').innerHTML='<tr><th>'+(jp?'取引先':'거래처')+'</th><th class="num">'+(jp?'クリニック':'클리닉')+'</th><th class="num">'+(jp?'受注':'수주')+'</th><th class="num">'+(jp?'入金':'수금')+'</th><th class="num">'+(jp?'未収':'미수')+'</th><th class="num">'+(jp?'件数':'건수')+'</th></tr>';
+  document.getElementById('caListBody').innerHTML=arr.map(function(x){return '<tr class="clk" onclick="selectCa(\''+_dq(x.f)+'\')"><td>'+x.f+'</td><td class="num">'+Object.keys(x.d.cl).length+'</td><td class="num" style="font-weight:700">¥'+fmt(Math.round(x.d.ord))+'</td><td class="num">¥'+fmt(Math.round(x.d.pay))+'</td><td class="num" style="color:'+(x.d.out>0?'#ef4444':'#cbd5e1')+'">¥'+fmt(Math.round(x.d.out))+'</td><td class="num">'+x.d.cnt+'</td></tr>';}).join('')||'<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:18px">'+(jp?'データなし':'데이터 없음')+'</td></tr>';
+}
+function selectCa(fac){ _caSel=fac; document.getElementById('caListWrap').style.display='none'; document.getElementById('caDetail').style.display='block'; renderCaDetail(fac); var el=document.getElementById('page-customer-analysis'); if(el)el.scrollIntoView({block:'start'}); }
+function caBackToList(){ _caSel=null; document.getElementById('caDetail').style.display='none'; document.getElementById('caListWrap').style.display=''; renderCaList(); }
+function renderCaDetail(fac){
+  var jp=lang==='jp';
+  var yr=(document.getElementById('caYear')||{}).value;
+  document.getElementById('caDetailName').textContent='🔍 '+fac;
   var orders=(allOrders||[]).filter(function(o){return o.facility===fac && (!yr||String(o.date||'').slice(0,4)===yr);});
-  if(!orders.length){ emptyEl.textContent=(jp?'該当データなし':'해당 거래처 데이터 없음'); emptyEl.style.display='block'; contEl.style.display='none'; return; }
-  emptyEl.style.display='none'; contEl.style.display='block';
   var oids={}; orders.forEach(function(o){oids[o.stableId]=o;});
   var paysFac=(allPayments||[]).filter(function(p){return p.orderRef&&oids[p.orderRef];});
   var paidMap={}; paysFac.forEach(function(p){paidMap[p.orderRef]=(paidMap[p.orderRef]||0)+(p.amount||0);});
@@ -4891,36 +4906,29 @@ function renderCustomerAnalysis(){
   var totPay=paysFac.filter(function(p){return !yr||String(p.date||'').slice(0,4)===yr;}).reduce(function(s,p){return s+(p.amount||0);},0);
   var outst=orders.reduce(function(s,o){return s+Math.max(0,(o.amount||0)-(paidMap[o.stableId]||0));},0);
   var ds=orders.map(function(o){return o.date;}).filter(Boolean).sort();
-  var kpi=[
-    {l:(jp?'受注額(売上)':'수주액(매출)'),v:'¥'+fmt(Math.round(totOrd))+_caKrw(totOrd)},
-    {l:(jp?'入金額':'수금액'),v:'¥'+fmt(Math.round(totPay))},
-    {l:(jp?'未収金':'미수금'),v:'¥'+fmt(Math.round(outst)),c:'#ef4444'},
-    {l:(jp?'取引件数':'거래 건수'),v:orders.length+(jp?'件':'건')},
-    {l:(jp?'初取引':'첫 거래'),v:ds[0]||'-'},
-    {l:(jp?'最近取引':'최근 거래'),v:ds[ds.length-1]||'-'}
-  ];
-  document.getElementById('caKpi').innerHTML=kpi.map(function(k){return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:13px"><div style="font-size:11px;color:#64748b;margin-bottom:6px">'+k.l+'</div><div style="font-size:16px;font-weight:800;color:'+(k.c||'#0f172a')+'">'+k.v+'</div></div>';}).join('');
+  var kpi=[{l:(jp?'受注額':'수주액'),v:'¥'+fmt(Math.round(totOrd)),bc:'#3b82f6'},{l:(jp?'入金額':'수금액'),v:'¥'+fmt(Math.round(totPay)),bc:'#10b981'},{l:(jp?'未収金':'미수금'),v:'¥'+fmt(Math.round(outst)),bc:'#ef4444'},{l:(jp?'取引件数':'거래 건수'),v:orders.length+(jp?'件':'건'),bc:'#8b5cf6'},{l:(jp?'初取引':'첫 거래'),v:ds[0]||'-',bc:'#0ea5e9'},{l:(jp?'最近取引':'최근 거래'),v:ds[ds.length-1]||'-',bc:'#0ea5e9'}];
+  document.getElementById('caKpi').innerHTML=kpi.map(function(k){return '<div class="esc" style="border-left-color:'+k.bc+'"><div class="l">'+k.l+'</div><div class="v" style="font-size:15px">'+k.v+'</div></div>';}).join('');
   var mo={};
-  orders.forEach(function(o){var m=String(o.date||'').slice(0,7);if(m){mo[m]=mo[m]||{ord:0,pay:0};mo[m].ord+=(o.amount||0);}});
-  paysFac.forEach(function(p){var m=String(p.date||'').slice(0,7);if(m&&(!yr||m.slice(0,4)===yr)){mo[m]=mo[m]||{ord:0,pay:0};mo[m].pay+=(p.amount||0);}});
-  var mks=Object.keys(mo).sort();
-  document.getElementById('caMonthHead').innerHTML='<tr><th>'+(jp?'年月':'연월')+'</th><th style="text-align:right">'+(jp?'受注':'수주')+'</th><th style="text-align:right">'+(jp?'入金':'수금')+'</th></tr>';
-  document.getElementById('caMonthBody').innerHTML=mks.map(function(m){return '<tr><td>'+m+'</td><td class="amount">¥'+fmt(Math.round(mo[m].ord))+'</td><td class="amount">¥'+fmt(Math.round(mo[m].pay))+'</td></tr>';}).join('')||'<tr><td colspan="3" style="text-align:center;color:#94a3b8;padding:14px">-</td></tr>';
+  orders.forEach(function(o){var m=String(o.date||'').slice(0,7);if(m){mo[m]=mo[m]||{ord:0,pay:0,cnt:0};mo[m].ord+=(o.amount||0);mo[m].cnt++;}});
+  paysFac.forEach(function(p){var m=String(p.date||'').slice(0,7);if(m&&(!yr||m.slice(0,4)===yr)){mo[m]=mo[m]||{ord:0,pay:0,cnt:0};mo[m].pay+=(p.amount||0);}});
+  var mks=Object.keys(mo).sort().reverse();
+  document.getElementById('caMonthHead').innerHTML='<tr><th>'+(jp?'年月':'연월')+'</th><th class="num">'+(jp?'受注':'수주')+'</th><th class="num">'+(jp?'入金':'수금')+'</th><th class="num">'+(jp?'件数':'건수')+'</th></tr>';
+  document.getElementById('caMonthBody').innerHTML=mks.map(function(m){return '<tr class="clk" onclick="openDrill({facility:\''+_dq(fac)+'\',ym:\''+m+'\',title:\''+_dq(fac)+' · '+m+'\'})"><td>'+m+'</td><td class="num">¥'+fmt(Math.round(mo[m].ord))+'</td><td class="num">¥'+fmt(Math.round(mo[m].pay))+'</td><td class="num">'+mo[m].cnt+'</td></tr>';}).join('')||'<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:14px">-</td></tr>';
   var pr={}; orders.forEach(function(o){var k=o.product||'-';pr[k]=pr[k]||{qty:0,amt:0,cnt:0};pr[k].qty+=(o.qty||0);pr[k].amt+=(o.amount||0);pr[k].cnt++;});
   var prk=Object.keys(pr).sort(function(a,b){return pr[b].amt-pr[a].amt;});
-  document.getElementById('caProdHead').innerHTML='<tr><th>'+(jp?'商品':'제품')+'</th><th style="text-align:right">'+(jp?'数量':'수량')+'</th><th style="text-align:right">'+(jp?'件数':'건수')+'</th><th style="text-align:right">'+(jp?'金額':'금액')+'</th></tr>';
-  document.getElementById('caProdBody').innerHTML=prk.map(function(k){return '<tr><td>'+k+'</td><td class="amount">'+fmt(pr[k].qty)+'</td><td class="amount">'+pr[k].cnt+'</td><td class="amount">¥'+fmt(Math.round(pr[k].amt))+'</td></tr>';}).join('');
+  document.getElementById('caProdHead').innerHTML='<tr><th>'+(jp?'商品':'제품')+'</th><th class="num">'+(jp?'数量':'수량')+'</th><th class="num">'+(jp?'件数':'건수')+'</th><th class="num">'+(jp?'金額':'금액')+'</th></tr>';
+  document.getElementById('caProdBody').innerHTML=prk.map(function(k){return '<tr class="clk" onclick="openDrill({facility:\''+_dq(fac)+'\',product:\''+_dq(k)+'\',year:\''+(yr||'')+'\',title:\''+_dq(fac)+' · '+_dq(k)+'\'})"><td>'+k+'</td><td class="num">'+fmt(pr[k].qty)+'</td><td class="num">'+pr[k].cnt+'</td><td class="num" style="font-weight:700">¥'+fmt(Math.round(pr[k].amt))+'</td></tr>';}).join('');
   var clMap={}, hasC=false;
   orders.forEach(function(o){ if(o.clinic&&o.clinic!==fac) hasC=true; var c=o.clinic||fac; clMap[c]=clMap[c]||{amt:0,cnt:0}; clMap[c].amt+=(o.amount||0); clMap[c].cnt++; });
   if(hasC){
     document.getElementById('caClinicCard').style.display='';
-    document.getElementById('caClinicHead').innerHTML='<tr><th>'+(jp?'クリニック':'클리닉')+'</th><th style="text-align:right">'+(jp?'件数':'건수')+'</th><th style="text-align:right">'+(jp?'金額':'금액')+'</th></tr>';
+    document.getElementById('caClinicHead').innerHTML='<tr><th>'+(jp?'クリニック':'클리닉')+'</th><th class="num">'+(jp?'件数':'건수')+'</th><th class="num">'+(jp?'金額':'금액')+'</th></tr>';
     var clk=Object.keys(clMap).sort(function(a,b){return clMap[b].amt-clMap[a].amt;});
-    document.getElementById('caClinicBody').innerHTML=clk.map(function(c){return '<tr><td>'+c+'</td><td class="amount">'+clMap[c].cnt+'</td><td class="amount">¥'+fmt(Math.round(clMap[c].amt))+'</td></tr>';}).join('');
+    document.getElementById('caClinicBody').innerHTML=clk.map(function(c){return '<tr class="clk" onclick="openDrill({facility:\''+_dq(fac)+'\',clinic:\''+_dq(c)+'\',year:\''+(yr||'')+'\',title:\''+_dq(c)+'\'})"><td>'+c+'</td><td class="num">'+clMap[c].cnt+'</td><td class="num">¥'+fmt(Math.round(clMap[c].amt))+'</td></tr>';}).join('');
   } else { document.getElementById('caClinicCard').style.display='none'; }
-  document.getElementById('caTxnHead').innerHTML='<tr><th>'+(jp?'日付':'날짜')+'</th><th>'+(jp?'クリニック':'클리닉')+'</th><th>'+(jp?'商品':'제품')+'</th><th>'+(jp?'区分':'구분')+'</th><th style="text-align:right">'+(jp?'数量':'수량')+'</th><th style="text-align:right">'+(jp?'金額':'금액')+'</th><th style="text-align:center">'+(jp?'入金':'입금')+'</th></tr>';
+  document.getElementById('caTxnHead').innerHTML='<tr><th>'+(jp?'日付':'날짜')+'</th><th>'+(jp?'クリニック':'클리닉')+'</th><th>'+(jp?'商品':'제품')+'</th><th>'+(jp?'区分':'구분')+'</th><th class="num">'+(jp?'数量':'수량')+'</th><th class="num">'+(jp?'金額':'금액')+'</th><th style="text-align:center">'+(jp?'入金':'입금')+'</th></tr>';
   var txns=orders.slice().sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));});
-  document.getElementById('caTxnBody').innerHTML=txns.map(function(o){var paid=paidMap[o.stableId]||0;var amt=o.amount||0;var st=paid>=amt?'<span style="color:#16a34a;font-weight:700">'+(jp?'完了':'완료')+'</span>':paid>0?'<span style="color:#b45309;font-weight:700">'+(jp?'一部':'일부')+'</span>':'<span style="color:#dc2626;font-weight:700">'+(jp?'未':'미입금')+'</span>';return '<tr><td style="white-space:nowrap">'+o.date+'</td><td>'+(o.clinic||'-')+'</td><td>'+o.product+'</td><td>'+catBadge(o.category)+'</td><td class="amount">'+fmt(o.qty)+'</td><td class="amount">¥'+fmt(Math.round(amt))+'</td><td style="text-align:center">'+st+'</td></tr>';}).join('');
+  document.getElementById('caTxnBody').innerHTML=txns.map(function(o){var paid=paidMap[o.stableId]||0;var amt=o.amount||0;var st=paid>=amt?'<span style="color:#16a34a;font-weight:700">'+(jp?'完了':'완료')+'</span>':paid>0?'<span style="color:#b45309;font-weight:700">'+(jp?'一部':'일부')+'</span>':'<span style="color:#dc2626;font-weight:700">'+(jp?'未':'미입금')+'</span>';return '<tr><td style="white-space:nowrap">'+o.date+'</td><td>'+(o.clinic||'-')+'</td><td>'+o.product+'</td><td>'+catBadge(o.category)+'</td><td class="num">'+fmt(o.qty)+'</td><td class="num">¥'+fmt(Math.round(amt))+'</td><td style="text-align:center">'+st+'</td></tr>';}).join('');
 }
 
 function loadOutstandingPage(){
