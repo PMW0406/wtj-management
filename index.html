@@ -18,11 +18,12 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 
 *{margin:0;padding:0;box-sizing:border-box}
 
-body{font-family:'Segoe UI','Noto Sans KR','Noto Sans JP',sans-serif;background:#f1f5f9;color:#1e293b}
+body{font-family:'Pretendard','Pretendard Variable','Segoe UI','Noto Sans JP',sans-serif;background:#f1f5f9;color:#1e293b;-webkit-font-smoothing:antialiased}
 
 .sidebar{position:fixed;left:0;top:0;width:220px;height:100vh;background:#0f172a;color:#e2e8f0;display:flex;flex-direction:column;z-index:100}
 
@@ -403,18 +404,18 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 }
 
-.exh{background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:16px;padding:22px 26px;color:#fff;margin-bottom:18px}
+.exh{background:linear-gradient(135deg,#111827,#1f2937);border-radius:16px;padding:24px 28px;color:#fff;margin-bottom:20px}
 .exh .h{font-size:12px;opacity:.65;letter-spacing:.3px;margin-bottom:10px}
-.exh .m{font-size:24px;font-weight:800;line-height:1.35}
+.exh .m{font-size:30px;font-weight:700;line-height:1.25;letter-spacing:-.5px}
 .exh .m .up{color:#4ade80}.exh .m .dn{color:#f87171}
 .exh .s{font-size:13px;opacity:.85;margin-top:12px;line-height:1.8}
 .exh .s b.up{color:#4ade80}.exh .s b.dn{color:#f87171}
-.esk{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px}
-.esc{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;border-left:4px solid #cbd5e1}
-.esc .l{font-size:11px;color:#64748b;margin-bottom:6px}.esc .v{font-size:16px;font-weight:800;color:#0f172a}.esc .d{font-size:11px;font-weight:700;margin-top:5px}
-.essec{margin-bottom:18px}.esst{font-size:14px;font-weight:800;color:#0f172a;margin-bottom:12px}
+.esk{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px}
+.esc{background:#fff;border:1px solid #e8edf3;border-radius:14px;padding:15px 16px;border-left:4px solid #cbd5e1}
+.esc .l{font-size:11px;color:#64748b;margin-bottom:7px;font-weight:500}.esc .v{font-size:19px;font-weight:700;color:#0f172a;letter-spacing:-.3px}.esc .d{font-size:11px;font-weight:600;margin-top:6px}
+.essec{margin-bottom:22px}.esst{font-size:13px;font-weight:700;color:#334155;margin-bottom:12px;display:flex;align-items:center;gap:6px}
 .esdual{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.esdl{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px}
+.esdl{background:#fff;border:1px solid #e8edf3;border-radius:14px;padding:18px}
 .esdl .t{font-size:13px;font-weight:700;margin-bottom:12px}
 .esrow{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px}
 .esrow .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -423,7 +424,8 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
 .esrow.clk{cursor:pointer;border-radius:7px;padding:6px;margin:0 -6px}
 .esrow.clk:hover{background:#f3f6fa}
 .esrow .chev{color:#cbd5e1;font-size:13px;margin-left:2px}
-@media(max-width:900px){.esk{grid-template-columns:repeat(3,1fr)}.esdual{grid-template-columns:1fr}}
+.estab{width:100%;border-collapse:collapse;font-size:13px}.estab th{text-align:left;color:#94a3b8;font-weight:600;font-size:11px;padding:7px 10px;border-bottom:1px solid #eef2f7}.estab td{padding:9px 10px;border-bottom:1px solid #f4f7fa;color:#1e293b}.estab tr:last-child td{border-bottom:none}.estab tr.clk{cursor:pointer}.estab tr.clk:hover td{background:#f7fafc}.estab .num{text-align:right;white-space:nowrap}.escard{background:#fff;border:1px solid #e8edf3;border-radius:14px;padding:8px 4px}
+@media(max-width:900px){.esk{grid-template-columns:repeat(2,1fr)}.esdual{grid-template-columns:1fr}}
 </style>
 
 </head>
@@ -2026,22 +2028,25 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
     <!-- ═══ 엑셀 업로드 ═══ -->
 
 <div class="page" id="page-exec-summary">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-    <div style="font-size:18px;font-weight:800;color:#0f172a" id="esPageTitle">📈 임원 요약</div>
-    <select id="esYear" onchange="renderExecSummary()" style="padding:7px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px">
-      <option value="2026">2026년</option><option value="2025">2025년</option>
-    </select>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+    <div style="font-size:18px;font-weight:700;color:#0f172a;white-space:nowrap" id="esPageTitle">📈 임원 요약</div>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:12px;color:#64748b;white-space:nowrap">📅 기간</span>
+      <select id="esYear" class="filter-input" style="width:90px" onchange="renderExecSummary()"><option value="2026">2026년</option><option value="2025">2025년</option></select>
+      <select id="esFrom" class="filter-input" style="width:66px" onchange="renderExecSummary()"><option value="01" selected>1월</option><option value="02">2월</option><option value="03">3월</option><option value="04">4월</option><option value="05">5월</option><option value="06">6월</option><option value="07">7월</option><option value="08">8월</option><option value="09">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option></select>
+      <span style="color:#94a3b8">~</span>
+      <select id="esTo" class="filter-input" style="width:66px" onchange="renderExecSummary()"><option value="01">1월</option><option value="02">2월</option><option value="03">3월</option><option value="04">4월</option><option value="05">5월</option><option value="06" selected>6월</option><option value="07">7월</option><option value="08">8월</option><option value="09">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option></select>
+    </div>
   </div>
   <div id="esHero"></div>
   <div id="esKpi" class="esk"></div>
-  <div class="essec"><div class="esst" id="esT1">📈 제품 성장 (전년 동기 대비 · 발생기준)</div><div id="esProd" class="esdual"></div></div>
-  <div class="essec"><div class="esst" id="esT2">🏥 거래처·클리닉 집중도</div><div id="esConc" style="margin-bottom:12px"></div><div id="esClinic" class="esdual"></div></div>
-  <div class="essec"><div class="esst" id="esT3">⚡ 분기 모멘텀</div><div id="esMom"></div></div>
-  <div class="essec"><div class="esst" id="esT4">⚠️ 미수 에이징 · 장기 미수</div><div id="esAge"></div></div>
+  <div class="essec"><div class="esst">📈 제품별 실적 <span style="font-weight:400;color:#94a3b8;font-size:11px">(전년 동기 대비 · 클릭 시 내역)</span></div><div id="esProd" class="escard"></div></div>
+  <div class="essec"><div class="esst">🏥 거래처 · 클리닉</div><div id="esConc" style="margin-bottom:12px"></div><div id="esClinic" class="esdual"></div></div>
+  <div class="essec"><div class="esst">⚠️ 미수 현황</div><div id="esAge"></div></div>
 </div>
 
     <div id="esDrill" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:1100;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeEsDrill()">
-  <div style="background:#fff;border-radius:14px;max-width:780px;width:100%;max-height:84vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.28)">
+  <div style="background:#fff;border-radius:14px;max-width:960px;width:100%;max-height:86vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.28)">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid #eef2f7;position:sticky;top:0;background:#fff;z-index:1">
       <div id="esDrillTitle" style="font-size:15px;font-weight:800;color:#0f172a"></div>
       <button onclick="closeEsDrill()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8">&#10005;</button>
@@ -3825,80 +3830,74 @@ function renderExecSummary(){
   var jp=lang==='jp';
   var year=document.getElementById('esYear')?document.getElementById('esYear').value:'2026';
   var prev=String(parseInt(year)-1);
+  var fM=parseInt((document.getElementById('esFrom')||{}).value||'1')||1;
+  var tM=parseInt((document.getElementById('esTo')||{}).value||'12')||12;
+  if(tM<fM){var tmp=fM;fM=tM;tM=tmp;}
+  var nmon=tM-fM+1;
+  function inR(dt,yr){var d=String(dt||'');if(d.slice(0,4)!==yr)return false;var m=parseInt(d.slice(5,7)||'0');return m>=fM&&m<=tM;}
   var orders=allOrders||[], pays=allPayments||[];
   var d=(_data&&_data.dashboard)||{};
-  var mw={}; orders.forEach(function(o){var dt=String(o.date||'');if(dt.slice(0,4)===year){mw[dt.slice(5,7)]=1;}});
-  var lm=1; for(var mm in mw){var x=parseInt(mm);if(x>lm)lm=x;} if(!Object.keys(mw).length) lm=12;
-  function inY(dt,yr){ return String(dt||'').slice(0,4)===yr && parseInt(String(dt).slice(5,7)||'13')<=lm; }
-  var ord26=0,ord25=0,pay26=0,pay25=0, prodY={}, prodP={};
-  orders.forEach(function(o){ var a=o.amount||0; if(inY(o.date,year)){ord26+=a; var k=o.product||'-'; prodY[k]=(prodY[k]||0)+a;} else if(inY(o.date,prev)){ord25+=a; var k2=o.product||'-'; prodP[k2]=(prodP[k2]||0)+a;} });
-  pays.forEach(function(p){ var a=p.amount||0; if(inY(p.date,year))pay26+=a; else if(inY(p.date,prev))pay25+=a; });
-  var tgt=0; for(var i=1;i<=lm;i++){tgt+=(d.monthlyTarget&&d.monthlyTarget[year+'-'+('0'+i).slice(-2)])||0;}
+  var ord26=0,ord25=0,pay26=0,pay25=0,prodY={},prodP={};
+  orders.forEach(function(o){var a=o.amount||0;if(inR(o.date,year)){ord26+=a;var k=o.product||'-';prodY[k]=(prodY[k]||0)+a;}else if(inR(o.date,prev)){ord25+=a;var k2=o.product||'-';prodP[k2]=(prodP[k2]||0)+a;}});
+  pays.forEach(function(p){var a=p.amount||0;if(inR(p.date,year))pay26+=a;else if(inR(p.date,prev))pay25+=a;});
+  var tgt=0; for(var i=fM;i<=tM;i++){tgt+=(d.monthlyTarget&&d.monthlyTarget[year+'-'+('0'+i).slice(-2)])||0;}
   var paid={}; pays.forEach(function(p){if(p.orderRef)paid[p.orderRef]=(paid[p.orderRef]||0)+(p.amount||0);});
-  var outAll=orders.filter(function(o){return o.stableId&&o.date&&o.date>='2025-01-01';}).map(function(o){var el=0;try{el=Math.floor((new Date()-new Date(o.date))/86400000);}catch(e){} return {o:o,out:Math.max(0,(o.amount||0)-(paid[o.stableId]||0)),el:el};}).filter(function(x){return x.out>=1;});
+  var outAll=orders.filter(function(o){return o.stableId&&o.date&&o.date>='2025-01-01';}).map(function(o){var el=0;try{el=Math.floor((new Date()-new Date(o.date))/86400000);}catch(e){}return {o:o,out:Math.max(0,(o.amount||0)-(paid[o.stableId]||0)),el:el};}).filter(function(x){return x.out>=1;});
   var outTot=outAll.reduce(function(s,x){return s+x.out;},0);
-  var ord26paid=orders.filter(function(o){return String(o.date||'').slice(0,4)===year;}).reduce(function(s,o){return s+Math.min(o.amount||0,paid[o.stableId]||0);},0);
+  var ord26paid=orders.filter(function(o){return inR(o.date,year);}).reduce(function(s,o){return s+Math.min(o.amount||0,paid[o.stableId]||0);},0);
   var coll=ord26>0?ord26paid/ord26*100:0;
   var yoyP=pay25>0?(pay26-pay25)/pay25*100:null, yoyO=ord25>0?(ord26-ord25)/ord25*100:null;
   var achv=tgt>0?pay26/tgt*100:0;
-  var krw=(_jpyRate>0)?(fmtKRW(pay26*_jpyRate/100)):'';
+  var krw=(_jpyRate>0)?fmtKRW(pay26*_jpyRate/100):'';
+  var perTxt=year+'년 '+fM+'~'+tM+'월';
   // 제품 성장
   var pk={}; Object.keys(prodY).forEach(function(k){pk[k]=1;}); Object.keys(prodP).forEach(function(k){pk[k]=1;});
-  var grow=Object.keys(pk).map(function(k){var a=prodY[k]||0,b=prodP[k]||0;return {k:k,delta:a-b,g:b>0?(a-b)/b*100:(a>0?null:0)};}).filter(function(x){return x.delta!==0;});
-  var up=grow.filter(function(x){return x.delta>0;}).sort(function(a,b){return b.delta-a.delta;}).slice(0,5);
-  var dn=grow.filter(function(x){return x.delta<0;}).sort(function(a,b){return a.delta-b.delta;}).slice(0,5);
+  var grow=Object.keys(pk).map(function(k){var a=prodY[k]||0,b=prodP[k]||0;return {k:k,a:a,b:b,delta:a-b,g:b>0?(a-b)/b*100:(a>0?null:0)};});
+  var up=grow.filter(function(x){return x.delta>0;}).sort(function(a,b){return b.delta-a.delta;}).slice(0,4);
+  var dn=grow.filter(function(x){return x.delta<0;}).sort(function(a,b){return a.delta-b.delta;}).slice(0,4);
   var topU=up[0], topD=dn[0];
-  // 헤드라인 (1줄 서브)
-  function yb(v){ if(v===null)return ''; var c=v>=0?'#4ade80':'#f87171'; return ' <span style="font-size:13px;font-weight:700;color:'+c+';background:rgba(255,255,255,.12);padding:2px 9px;border-radius:20px">'+(jp?'前年比':'전년比')+' '+(v>=0?'+':'')+v.toFixed(1)+'%</span>'; }
-  document.getElementById('esHero').innerHTML='<div class="exh"><div class="h">'+year+'년 1~'+lm+'월 누계 · '+(jp?'入金基準売上':'수금기준 매출')+'</div>'+
-    '<div class="m">'+_amt(pay26)+' <span style="font-size:14px;opacity:.6">'+krw+'</span>'+yb(yoyP)+'</div>'+
-    '<div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(jp?'目標':'목표')+' '+achv.toFixed(0)+'% · '+(jp?'受注':'수주')+' '+_amt(ord26)+' · '+(jp?'未収':'미수')+' '+_amt(outTot)+
-    (topU?' · '+(jp?'牽引':'견인')+' '+topU.k:'')+(topD?' · '+(jp?'不振':'부진')+' '+topD.k:'')+'</div></div>';
-  // KPI
-  var kpis=[
-    {l:(jp?'受注(発生)':'수주(발생)'),v:_amt(ord26),d:_pct(yoyO),dc:_rag(yoyO),bc:'#3b82f6'},
-    {l:(jp?'売上(入金)':'매출(수금)'),v:_amt(pay26),d:_pct(yoyP),dc:_rag(yoyP),bc:'#10b981'},
-    {l:(jp?'目標達成率':'목표 달성률'),v:achv.toFixed(0)+'%',d:(jp?'目標':'목표')+' '+_amt(tgt),dc:'#94a3b8',bc:achv>=100?'#16a34a':(achv>=80?'#f59e0b':'#ef4444')},
-    {l:(jp?'未収金':'미수금'),v:_amt(outTot),d:outAll.length+(jp?'件':'건'),dc:'#94a3b8',bc:'#ef4444'},
-    {l:(jp?'回収率':'수금률'),v:coll.toFixed(0)+'%',d:(jp?'当年受注分':'당해 주문분'),dc:'#94a3b8',bc:'#8b5cf6'},
-    {l:(jp?'月平均売上':'월평균 매출'),v:_amt(pay26/lm),d:lm+(jp?'ヶ月':'개월'),dc:'#94a3b8',bc:'#0ea5e9'}
-  ];
-  document.getElementById('esKpi').innerHTML=kpis.map(function(k){return '<div class="esc" style="border-left-color:'+k.bc+'"><div class="l">'+k.l+'</div><div class="v">'+k.v+'</div><div class="d" style="color:'+k.dc+'">'+k.d+'</div></div>';}).join('');
-  // 제품 성장 듀얼 (클릭)
-  function prow(x){var c=x.delta>=0?'#16a34a':'#b91c1c';return '<div class="esrow clk" title="'+(jp?'クリックで明細':'클릭하면 내역')+'" onclick="openExecDrill(\'product\',\''+_dq(x.k)+'\')"><span class="nm">'+x.k+'</span><span class="vv" style="color:'+c+'">'+(x.delta>=0?'+':'')+_amt(x.delta)+' '+(x.g!==null?'('+_pct(x.g)+')':'(NEW)')+'</span><span class="chev">&#8250;</span></div>';}
-  document.getElementById('esProd').innerHTML=
-    '<div class="esdl"><div class="t">🚀 '+(jp?'成長 TOP':'성장 TOP')+'</div>'+(up.map(prow).join('')||'<div style="color:#94a3b8;font-size:13px">-</div>')+'</div>'+
-    '<div class="esdl"><div class="t">🔻 '+(jp?'減少 TOP':'하락 TOP')+'</div>'+(dn.map(prow).join('')||'<div style="color:#94a3b8;font-size:13px">-</div>')+'</div>';
+  // 헤드라인
+  function yb(v){if(v===null)return '';var c=v>=0?'#4ade80':'#f87171';return ' <span style="font-size:13px;font-weight:600;color:'+c+';background:rgba(255,255,255,.1);padding:3px 10px;border-radius:20px;margin-left:6px">'+(jp?'前年比':'전년比')+' '+(v>=0?'+':'')+v.toFixed(1)+'%</span>';}
+  document.getElementById('esHero').innerHTML='<div class="exh"><div class="h">'+perTxt+' · '+(jp?'入金基準売上':'수금기준 매출')+'</div>'+
+    '<div class="m">'+_amt(pay26)+' <span style="font-size:15px;opacity:.55;font-weight:500">'+krw+'</span>'+yb(yoyP)+'</div>'+
+    '<div class="s" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500">'+(jp?'目標':'목표')+' '+achv.toFixed(0)+'% · '+(jp?'受注':'수주')+' '+_amt(ord26)+' · '+(jp?'未収':'미수')+' '+_amt(outTot)+(topU?' · '+(jp?'牽引':'견인')+' '+topU.k:'')+(topD?' · '+(jp?'不振':'부진')+' '+topD.k:'')+'</div></div>';
+  // KPI (전년·올해·성장률)
+  function card(l,v,prevTxt,g,bc){var gc=_rag(g);return '<div class="esc" style="border-left-color:'+bc+'"><div class="l">'+l+'</div><div class="v">'+v+'</div><div class="d">'+prevTxt+(g!==null&&g!==undefined?' <span style="color:'+gc+';font-weight:700">'+(g>=0?'+':'')+g.toFixed(1)+'%</span>':'')+'</div></div>';}
+  document.getElementById('esKpi').innerHTML=
+    card((jp?'売上(入金)':'매출(수금)'),_amt(pay26),(jp?'前年 ':'전년 ')+_amt(pay25),yoyP,'#10b981')+
+    card((jp?'受注(発生)':'수주(발생)'),_amt(ord26),(jp?'前年 ':'전년 ')+_amt(ord25),yoyO,'#3b82f6')+
+    card((jp?'目標達成率':'목표 달성률'),achv.toFixed(0)+'%',(jp?'目標 ':'목표 ')+_amt(tgt),null,achv>=100?'#16a34a':(achv>=80?'#f59e0b':'#ef4444'))+
+    card((jp?'回収率':'수금률'),coll.toFixed(0)+'%',(jp?'未収 ':'미수 ')+_amt(outTot),null,'#8b5cf6')+
+    card((jp?'月平均売上':'월평균 매출'),_amt(pay26/nmon),nmon+(jp?'ヶ月平均':'개월 평균'),null,'#0ea5e9');
+  // 제품별 실적 표 (전년/올해/성장률, 클릭)
+  var prows=grow.filter(function(x){return x.a>0||x.b>0;}).sort(function(a,b){return b.a-a.a;}).slice(0,12);
+  var th='<table class="estab"><thead><tr><th>'+(jp?'商品':'제품')+'</th><th class="num">'+(jp?'前年':'전년')+'</th><th class="num">'+(jp?'当年':'올해')+'</th><th class="num">'+(jp?'成長率':'성장률')+'</th></tr></thead><tbody>';
+  document.getElementById('esProd').innerHTML=th+prows.map(function(x){var gc=_rag(x.g);return '<tr class="clk" onclick="openExecDrill(\'product\',\''+_dq(x.k)+'\')"><td>'+x.k+'</td><td class="num" style="color:#94a3b8">'+_amt(x.b)+'</td><td class="num" style="font-weight:700">'+_amt(x.a)+'</td><td class="num" style="color:'+gc+';font-weight:700">'+(x.g!==null?(x.g>=0?'+':'')+x.g.toFixed(1)+'%':(jp?'新規':'신규'))+'</td></tr>';}).join('')+'</tbody></table>';
   // 집중도
-  var facY={}; orders.forEach(function(o){if(String(o.date||'').slice(0,4)===year){var f=o.facility||'-';facY[f]=(facY[f]||0)+(o.amount||0);}});
+  var facY={}; orders.forEach(function(o){if(inR(o.date,year)){var f=o.facility||'-';facY[f]=(facY[f]||0)+(o.amount||0);}});
   var facArr=Object.keys(facY).map(function(f){return {f:f,a:facY[f]};}).sort(function(a,b){return b.a-a.a;});
   var top5sum=facArr.slice(0,5).reduce(function(s,x){return s+x.a;},0);
   var agency=facArr.filter(function(x){return x.f.toUpperCase()==='JK JAPAN'||x.f.toUpperCase()==='INFIX';}).reduce(function(s,x){return s+x.a;},0);
-  document.getElementById('esConc').innerHTML='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">'+
+  document.getElementById('esConc').innerHTML='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">'+
     '<div class="esc" style="border-left-color:#6366f1"><div class="l">'+(jp?'上位5社 比重':'상위 5거래처 비중')+'</div><div class="v">'+(ord26>0?(top5sum/ord26*100).toFixed(0):0)+'%</div><div class="d" style="color:#94a3b8">'+_amt(top5sum)+'</div></div>'+
     '<div class="esc" style="border-left-color:#f59e0b"><div class="l">'+(jp?'代理店依存(JK/INFIX)':'대리점 의존(JK/INFIX)')+'</div><div class="v">'+(ord26>0?(agency/ord26*100).toFixed(0):0)+'%</div><div class="d" style="color:#94a3b8">'+_amt(agency)+'</div></div>'+
-    '<div class="esc" style="border-left-color:#0ea5e9"><div class="l">'+(jp?'取引先数':'거래처 수')+'</div><div class="v">'+facArr.length+(jp?'社':'개')+'</div><div class="d" style="color:#94a3b8">'+(jp?'当年取引':'당해 거래')+'</div></div></div>';
-  // 클리닉 주력↔재구매 (클릭)
-  var clY={},clP={}; orders.forEach(function(o){var c=o.clinic||o.facility||'-';var y4=String(o.date||'').slice(0,4);if(y4===year)clY[c]=(clY[c]||0)+(o.amount||0);else if(y4===prev)clP[c]=(clP[c]||0)+(o.amount||0);});
+    '<div class="esc" style="border-left-color:#0ea5e9"><div class="l">'+(jp?'取引先数':'거래처 수')+'</div><div class="v">'+facArr.length+(jp?'社':'개')+'</div><div class="d" style="color:#94a3b8">'+(jp?'当期':'당기')+'</div></div></div>';
+  // 클리닉 주력↔재구매
+  var clY={},clP={}; orders.forEach(function(o){var c=o.clinic||o.facility||'-';if(inR(o.date,year))clY[c]=(clY[c]||0)+(o.amount||0);else if(inR(o.date,prev))clP[c]=(clP[c]||0)+(o.amount||0);});
   var core=Object.keys(clY).map(function(c){return {c:c,a:clY[c]};}).sort(function(a,b){return b.a-a.a;}).slice(0,6);
-  var churn=Object.keys(clP).filter(function(c){return (clY[c]||0)<=(clP[c]*0.1);}).map(function(c){return {c:c,b:clP[c],a:clY[c]||0};}).sort(function(a,b){return b.b-a.b;}).slice(0,6);
-  function crow(c,val,col){return '<div class="esrow clk" title="'+(jp?'クリックで明細':'클릭하면 내역')+'" onclick="openExecDrill(\'clinic\',\''+_dq(c)+'\')"><span class="nm">'+c+'</span><span class="vv"'+(col?' style="color:'+col+'"':'')+'>'+val+'</span><span class="chev">&#8250;</span></div>';}
+  var churn=Object.keys(clP).filter(function(c){return (clY[c]||0)<=(clP[c]*0.1);}).map(function(c){return {c:c,b:clP[c]};}).sort(function(a,b){return b.b-a.b;}).slice(0,6);
+  function ctab(title,rows){return '<div class="esdl"><div class="t">'+title+'</div><table class="estab"><tbody>'+rows+'</tbody></table></div>';}
   document.getElementById('esClinic').innerHTML=
-    '<div class="esdl"><div class="t">⭐ '+(jp?'主力クリニック':'주력 클리닉')+'</div>'+(core.map(function(x){return crow(x.c,_amt(x.a));}).join('')||'<div style="color:#94a3b8;font-size:13px">-</div>')+'</div>'+
-    '<div class="esdl"><div class="t">⚠️ '+(jp?'再購入必要(離脱懸念)':'재구매 필요 (이탈 우려)')+'</div>'+(churn.map(function(x){return crow(x.c,(jp?'前年':'전년')+' '+_amt(x.b)+' → '+_amt(x.a),'#b91c1c');}).join('')||'<div style="color:#94a3b8;font-size:13px">-</div>')+'</div>';
-  // 분기 모멘텀
-  function qSum(arr,yr,q){var ms=q===1?['01','02','03']:['04','05','06'];return arr.filter(function(o){var dt=String(o.date||'');return dt.slice(0,4)===yr&&ms.indexOf(dt.slice(5,7))>=0;}).reduce(function(s,o){return s+(o.amount||0);},0);}
-  function mrow(l,a,b){var g=a>0?(b-a)/a*100:null;var c=_rag(g);return '<tr><td>'+l+'</td><td class="amount">'+_amt(a)+'</td><td class="amount">'+_amt(b)+'</td><td class="amount" style="color:'+c+';font-weight:700">'+_pct(g)+'</td></tr>';}
-  document.getElementById('esMom').innerHTML='<div class="esdl" style="grid-column:1/-1"><div style="overflow-x:auto"><table style="width:100%"><thead><tr><th>'+(jp?'区分':'구분')+'</th><th style="text-align:right">Q1</th><th style="text-align:right">Q2</th><th style="text-align:right">'+(jp?'増減':'증감')+'</th></tr></thead><tbody>'+
-    mrow((jp?'受注(発生)':'수주(발생)'),qSum(orders,year,1),qSum(orders,year,2))+mrow((jp?'売上(入金)':'매출(수금)'),qSum(pays,year,1),qSum(pays,year,2))+'</tbody></table></div></div>';
-  // 미수 에이징
+    ctab('⭐ '+(jp?'主力クリニック':'주력 클리닉'), core.map(function(x){return '<tr class="clk" onclick="openExecDrill(\'clinic\',\''+_dq(x.c)+'\')"><td>'+x.c+'</td><td class="num" style="font-weight:700">'+_amt(x.a)+'</td></tr>';}).join('')||'<tr><td style="color:#94a3b8">-</td></tr>')+
+    ctab('⚠️ '+(jp?'再購入必要':'재구매 필요'), churn.map(function(x){return '<tr class="clk" onclick="openExecDrill(\'clinic\',\''+_dq(x.c)+'\')"><td>'+x.c+'</td><td class="num" style="color:#b91c1c">'+(jp?'前年':'전년')+' '+_amt(x.b)+'</td></tr>';}).join('')||'<tr><td style="color:#94a3b8">-</td></tr>');
+  // 미수 에이징 + 장기미수
   var buck=[{l:'0~30',mn:0,mx:30,amt:0,cnt:0},{l:'31~90',mn:31,mx:90,amt:0,cnt:0},{l:'91~180',mn:91,mx:180,amt:0,cnt:0},{l:'180+',mn:181,mx:1e9,amt:0,cnt:0}];
   outAll.forEach(function(x){for(var i=0;i<buck.length;i++){if(x.el>=buck[i].mn&&x.el<=buck[i].mx){buck[i].amt+=x.out;buck[i].cnt++;break;}}});
   var bcol=['#16a34a','#eab308','#f97316','#ef4444'];
-  var ag='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px">'+buck.map(function(b,i){return '<div class="esc" style="border-left-color:'+bcol[i]+'"><div class="l">'+(jp?'経過':'경과')+' '+b.l+(jp?'日':'일')+'</div><div class="v">'+_amt(b.amt)+'</div><div class="d" style="color:#94a3b8">'+b.cnt+(jp?'件':'건')+'</div></div>';}).join('')+'</div>';
+  var ag='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px">'+buck.map(function(b,i){return '<div class="esc" style="border-left-color:'+bcol[i]+'"><div class="l">'+(jp?'経過':'경과')+' '+b.l+(jp?'日':'일')+'</div><div class="v">'+_amt(b.amt)+'</div><div class="d" style="color:#94a3b8">'+b.cnt+(jp?'件':'건')+'</div></div>';}).join('')+'</div>';
   var longO=outAll.slice().sort(function(a,b){return b.el-a.el;}).slice(0,8);
-  ag+='<div class="esdl" style="grid-column:1/-1"><div class="t">📋 '+(jp?'長期未収 TOP':'장기 미수 TOP')+' <span style="font-weight:400;color:#94a3b8;font-size:11px">('+(jp?'クリックで明細':'클릭하면 내역')+')</span></div><div style="overflow-x:auto"><table style="width:100%"><thead><tr><th>'+(jp?'取引先':'거래처')+'</th><th>'+(jp?'クリニック':'클리닉')+'</th><th style="text-align:right">'+(jp?'未収':'미수')+'</th><th style="text-align:right">'+(jp?'経過':'경과')+'</th></tr></thead><tbody>'+
-    longO.map(function(x){return '<tr style="cursor:pointer" onclick="openExecDrill(\'facility\',\''+_dq(x.o.facility||'')+'\')"><td>'+(x.o.facility||'-')+'</td><td>'+(x.o.clinic||'-')+'</td><td class="amount">'+_amt(x.out)+'</td><td class="amount" style="color:'+(x.el>=180?'#ef4444':x.el>=90?'#f97316':'#64748b')+';font-weight:700">'+x.el+(jp?'日':'일')+'</td></tr>';}).join('')+'</tbody></table></div></div>';
+  ag+='<div class="esdl"><div class="t">📋 '+(jp?'長期未収 TOP':'장기 미수 TOP')+' <span style="font-weight:400;color:#94a3b8;font-size:11px">('+(jp?'クリックで明細':'클릭 시 내역')+')</span></div><table class="estab"><thead><tr><th>'+(jp?'取引先':'거래처')+'</th><th>'+(jp?'クリニック':'클리닉')+'</th><th class="num">'+(jp?'未収':'미수')+'</th><th class="num">'+(jp?'経過':'경과')+'</th></tr></thead><tbody>'+
+    longO.map(function(x){return '<tr class="clk" onclick="openExecDrill(\'facility\',\''+_dq(x.o.facility||'')+'\')"><td>'+(x.o.facility||'-')+'</td><td>'+(x.o.clinic||'-')+'</td><td class="num">'+_amt(x.out)+'</td><td class="num" style="color:'+(x.el>=180?'#ef4444':x.el>=90?'#f97316':'#64748b')+';font-weight:700">'+x.el+(jp?'日':'일')+'</td></tr>';}).join('')+'</tbody></table></div>';
   document.getElementById('esAge').innerHTML=ag;
 }
 function _dq(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
@@ -3908,14 +3907,14 @@ function openExecDrill(field,value){
   var paid={}; (allPayments||[]).forEach(function(p){if(p.orderRef)paid[p.orderRef]=(paid[p.orderRef]||0)+(p.amount||0);});
   var rows=(allOrders||[]).filter(function(o){return o[field]===value && String(o.date||'').slice(0,4)===year;}).sort(function(a,b){return String(b.date||'').localeCompare(String(a.date||''));});
   document.getElementById('esDrillTitle').textContent=value+'  ('+year+(jp?'年 ':'년 ')+rows.length+(jp?'件':'건')+')';
-  document.getElementById('esDrillHead').innerHTML='<tr><th style="text-align:left">'+(jp?'日付':'날짜')+'</th><th style="text-align:left">'+(jp?'取引先':'거래처')+'</th><th style="text-align:left">'+(jp?'クリニック':'클리닉')+'</th><th style="text-align:left">'+(jp?'商品':'제품')+'</th><th style="text-align:right">'+(jp?'数量':'수량')+'</th><th style="text-align:right">'+(jp?'金額':'금액')+'</th><th style="text-align:center">'+(jp?'入金':'입금')+'</th></tr>';
+  var nw='white-space:nowrap';
+  document.getElementById('esDrillHead').innerHTML='<tr><th style="text-align:left;'+nw+'">'+(jp?'日付':'날짜')+'</th><th style="text-align:left;'+nw+'">'+(jp?'取引先':'거래처')+'</th><th style="text-align:left;'+nw+'">'+(jp?'クリニック':'클리닉')+'</th><th style="text-align:left;'+nw+'">'+(jp?'商品':'제품')+'</th><th style="text-align:right;'+nw+'">'+(jp?'数量':'수량')+'</th><th style="text-align:right;'+nw+'">'+(jp?'金額':'금액')+'</th><th style="text-align:center;'+nw+'">'+(jp?'入金':'입금')+'</th></tr>';
   var tot=0;
-  document.getElementById('esDrillBody').innerHTML=rows.map(function(o){tot+=o.amount||0;var pd=paid[o.stableId]||0;var amt=o.amount||0;var st=pd>=amt?'<span style="color:#16a34a">'+(jp?'完了':'완료')+'</span>':pd>0?'<span style="color:#b45309">'+(jp?'一部':'일부')+'</span>':'<span style="color:#dc2626">'+(jp?'未':'미입금')+'</span>';return '<tr><td style="white-space:nowrap">'+o.date+'</td><td>'+(o.facility||'-')+'</td><td>'+(o.clinic||'-')+'</td><td>'+o.product+'</td><td class="amount">'+fmt(o.qty)+'</td><td class="amount">'+_amt(amt)+'</td><td style="text-align:center">'+st+'</td></tr>';}).join('')||'<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:18px">-</td></tr>';
+  document.getElementById('esDrillBody').innerHTML=rows.map(function(o){tot+=o.amount||0;var pd=paid[o.stableId]||0;var amt=o.amount||0;var st=pd>=amt?'<span style="color:#16a34a">'+(jp?'完了':'완료')+'</span>':pd>0?'<span style="color:#b45309">'+(jp?'一部':'일부')+'</span>':'<span style="color:#dc2626">'+(jp?'未':'미입금')+'</span>';return '<tr><td style="'+nw+'">'+o.date+'</td><td style="'+nw+'">'+(o.facility||'-')+'</td><td style="'+nw+'">'+(o.clinic||'-')+'</td><td style="'+nw+'">'+o.product+'</td><td class="num">'+fmt(o.qty)+'</td><td class="num">'+_amt(amt)+'</td><td style="text-align:center;'+nw+'">'+st+'</td></tr>';}).join('')||'<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:18px">-</td></tr>';
   document.getElementById('esDrillFoot').textContent=(jp?'合計 ':'합계 ')+rows.length+(jp?'件 · ':'건 · ')+_amt(tot);
   document.getElementById('esDrill').style.display='flex';
 }
 function closeEsDrill(){ document.getElementById('esDrill').style.display='none'; }
-
 
 function loadDashboard(){
 
