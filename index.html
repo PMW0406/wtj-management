@@ -391,7 +391,17 @@ input:focus,select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,2
   #detailModal > div, #productDetailModal > div{max-height:100vh;border-radius:0;width:100%}
 
 }
-
+#pdf-fab{position:fixed;bottom:18px;right:18px;z-index:90;background:#475569;color:#fff;border:0;border-radius:22px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(15,23,42,.28)}
+#pdf-fab:hover{background:#334155}
+@media print{
+  @page{size:A4 landscape;margin:9mm}
+  body{background:#fff!important}
+  .sidebar,.sidebar-overlay,#login-screen,#pdf-fab,.topbar select,.topbar button{display:none!important}
+  .main{margin-left:0!important}
+  .content{padding:0!important}
+  .card,table,canvas{break-inside:avoid}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
 </style>
 
 </head>
@@ -2361,7 +2371,9 @@ function _applyLoginUI() {
 
 
 async function _bootApp() {
-  var savedPage = 'dashboard';   // 진입 시 항상 대시보드(첫 메뉴)
+  var _nav=(performance.getEntriesByType('navigation')[0]||{}).type;   // reload=새로고침 / navigate=신규진입
+  var _sv=sessionStorage.getItem('wtj_cur_page');
+  var savedPage=(_nav==='reload' && _sv && document.getElementById(_sv)) ? _sv : 'dashboard';   // 새로고침=머문 페이지, 신규=대시보드
   var _nowM = String(new Date().getMonth()+1).padStart(2,'0');
   var _toEl = document.getElementById('dash-to-sel');
   if (_toEl) _toEl.value = _nowM;
@@ -6626,7 +6638,8 @@ document.addEventListener('click', function(e) {
       </div>
     </div>
   </div>
-
+<script>function printPDF(){var t=document.title;var r=function(){document.title=t;window.removeEventListener('afterprint',r);};window.addEventListener('afterprint',r);window.print();}</script>
+<button id="pdf-fab" onclick="printPDF()" title="이 페이지를 PDF로 추출">📄 PDF</button>
 </body>
 
 </html>
